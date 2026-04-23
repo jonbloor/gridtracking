@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Grid Tracking • Scout</title>
+    <meta name="theme-color" content="#7413dc">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        :root {
+            --brand: #7413dc;
+            --success: #0b6b3a;
+            --danger: #c0392b;
+            --warning: #8a5a00;
+            --text: #1f2937;
+            --muted: #4b5563;
+            --bg: #f4f6f8;
+            --card: #ffffff;
+            --border: #d8dee6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 18px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 460px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 18px;
+            padding: 24px 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: var(--brand);
+            margin: 0 0 8px;
+            line-height: 1.15;
+            font-size: 2rem;
+        }
+
+        .intro {
+            margin: 0 0 18px;
+            color: var(--text);
+        }
+
+        .note,
+        .event-box,
+        .reminder,
+        .saved-box {
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin: 14px 0;
+        }
+
+        .note {
+            background: #f3effc;
+            border: 1px solid #ddd0fa;
+            color: #352152;
+        }
+
+        .event-box {
+            background: #eef6f0;
+            border: 1px solid #cbe6d3;
+            color: #124427;
+            font-weight: 600;
+        }
+
+        .event-box.inactive {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: #9f1239;
+        }
+
+        .saved-box {
+            display: none;
+            background: #eef6ff;
+            border: 1px solid #cfe0ff;
+            color: #14396b;
+        }
+
+        .saved-box button {
+            margin-top: 12px;
+            background: #1f4f91;
+            padding: 12px 14px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin: 16px 0 6px;
+        }
+
+        select,
+        input,
+        button {
+            width: 100%;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        select,
+        input {
+            border: 2px solid var(--border);
+            padding: 14px;
+            background: #fff;
+        }
+
+        select:focus,
+        input:focus,
+        button:focus {
+            outline: 3px solid rgba(116, 19, 220, 0.20);
+            outline-offset: 1px;
+        }
+
+        button {
+            margin-top: 18px;
+            border: none;
+            padding: 16px 18px;
+            background: var(--success);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover { filter: brightness(0.98); }
+        button:active { transform: translateY(1px); }
+        button[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+        #status {
+            min-height: 1.5em;
+            margin: 16px 0 0;
+            font-weight: 600;
+        }
+
+        .status-error { color: var(--danger); }
+        .status-ok { color: var(--success); }
+        .status-warn { color: var(--warning); }
+
+        .reminder {
+            display: none;
+            background: #fff4f2;
+            border: 2px solid #f7b4a8;
+            color: #7a271a;
+            font-weight: 700;
+        }
+
+        .reminder button {
+            margin-top: 12px;
+            background: var(--danger);
+            padding: 12px 14px;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            margin-top: 18px;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .footer-links a {
+            color: var(--brand);
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌲 Grid Tracking</h1>
+        <p class="intro"><strong>Scout location sharing</strong> for the current event.</p>
+
+        <div class="note">
+            This app stores only your <strong>team</strong>, <strong>location</strong> and <strong>time of update</strong>. Logged locations are kept for up to <strong>24 hours</strong>.
+        </div>
+
+        <div id="activeEvent" class="event-box">Loading event status…</div>
+
+        <div id="savedBox" class="saved-box" aria-live="polite"></div>
+
+        <label for="team">Team</label>
+        <select id="team" autocomplete="off">
+            <option value="">— Loading teams... —</option>
+        </select>
+
+        <div id="pinWrap">
+            <label for="pin">Team PIN</label>
+            <input type="password" id="pin" placeholder="Enter your team PIN" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="one-time-code">
+        </div>
+
+        <button id="shareButton" type="button">📍 Share My Location Now</button>
+
+        <p id="status" aria-live="polite"></p>
+
+        <div id="reminder" class="reminder" aria-live="polite"></div>
+
+        <p class="small">If you are lost, send your location and then stay where you are unless a leader has told you otherwise.</p>
+        <p class="footer-links">Privacy: <a href="privacy.php">full notice</a> • <a href="privacy-young-people.php">young people’s version</a></p>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        const LAST_PING_KEY = 'gridTracking_lastPingTime';
+        const SAVED_AUTH_KEY = 'gridTracking_savedAuth';
+
+        const eventEl = document.getElementById('activeEvent');
+        const teamEl = document.getElementById('team');
+        const pinEl = document.getElementById('pin');
+        const pinWrapEl = document.getElementById('pinWrap');
+        const statusEl = document.getElementById('status');
+        const reminderEl = document.getElementById('reminder');
+        const savedBoxEl = document.getElementById('savedBox');
+        const shareButton = document.getElementById('shareButton');
+
+        let lastPingTime = Number(localStorage.getItem(LAST_PING_KEY) || 0);
+        let currentEventId = null;
+
+        function getSavedAuth() {
+            try {
+                return JSON.parse(localStorage.getItem(SAVED_AUTH_KEY) || 'null');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setSavedAuth(data) {
+            localStorage.setItem(SAVED_AUTH_KEY, JSON.stringify(data));
+        }
+
+        function clearSavedAuth(reason = '') {
+            localStorage.removeItem(SAVED_AUTH_KEY);
+            pinEl.value = '';
+            updateSavedAuthUI();
+            if (reason) {
+                setStatus(reason, 'warn');
+            }
+        }
+
+        function getTeamFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            return (params.get('team') || '').trim();
+        }
+
+        function setStatus(message, type = '') {
+            statusEl.textContent = message;
+            statusEl.className = type ? `status-${type}` : '';
+        }
+
+        function updateReminder() {
+            if (!lastPingTime) {
+                reminderEl.style.display = 'none';
+                reminderEl.innerHTML = '';
+                return;
+            }
+
+            const minutesAgo = Math.floor((Date.now() - lastPingTime) / 60000);
+
+            if (minutesAgo >= 5) {
+                reminderEl.style.display = 'block';
+                reminderEl.innerHTML = `
+                    ⚠️ It has been <strong>${minutesAgo}</strong> minute${minutesAgo === 1 ? '' : 's'} since your last update.<br>
+                    <button type="button" id="reminderButton">Update Location Now</button>
+                `;
+
+                const reminderButton = document.getElementById('reminderButton');
+                if (reminderButton) {
+                    reminderButton.addEventListener('click', submitLocation);
+                }
+            } else {
+                reminderEl.style.display = 'none';
+                reminderEl.innerHTML = '';
+            }
+        }
+
+        function updateSavedAuthUI() {
+            const auth = getSavedAuth();
+            const selectedTeam = teamEl.value;
+
+            if (auth && auth.event_id === currentEventId && auth.team && auth.token && auth.team === selectedTeam) {
+                pinWrapEl.classList.add('hidden');
+                savedBoxEl.style.display = 'block';
+                savedBoxEl.innerHTML = `
+                    ✅ This device remembers <strong>${auth.team}</strong> for the current event, so you do not need to re-enter the PIN.
+                    <button type="button" id="forgetSavedTeam">Forget saved team on this device</button>
+                `;
+                const btn = document.getElementById('forgetSavedTeam');
+                if (btn) {
+                    btn.addEventListener('click', () => clearSavedAuth('Saved team removed from this device. Please enter the PIN again.'));
+                }
+            } else {
+                pinWrapEl.classList.remove('hidden');
+                savedBoxEl.style.display = 'none';
+                savedBoxEl.innerHTML = '';
+            }
+        }
+
+        async function loadActiveEventAndTeams() {
+            try {
+                const statusRes = await fetch('api.php?action=status', { cache: 'no-store' });
+                const statusData = await statusRes.json();
+
+                const savedAuth = getSavedAuth();
+                currentEventId = Number(statusData.event_id || 0) || null;
+
+                if (savedAuth && (!currentEventId || Number(savedAuth.event_id) !== currentEventId)) {
+                    clearSavedAuth();
+                }
+
+                if (statusData.active && statusData.event_name) {
+                    eventEl.classList.remove('inactive');
+                    eventEl.innerHTML = `✅ Active event: <strong>${statusData.event_name}</strong>`;
+                } else {
+                    eventEl.classList.add('inactive');
+                    eventEl.textContent = '⛔ No active event – ask a leader to turn tracking on';
+                    teamEl.innerHTML = '<option value="">No active event</option>';
+                    updateSavedAuthUI();
+                    return;
+                }
+
+                const teamsRes = await fetch('api.php?action=active_teams', { cache: 'no-store' });
+                const teamsData = await teamsRes.json();
+
+                teamEl.innerHTML = '<option value="">— Select your team —</option>';
+
+                if (Array.isArray(teamsData.teams) && teamsData.teams.length > 0) {
+                    teamsData.teams.forEach(team => {
+                        const opt = document.createElement('option');
+                        opt.value = team.team_name;
+                        opt.textContent = team.team_name;
+                        teamEl.appendChild(opt);
+                    });
+
+                    const queryTeam = getTeamFromQuery();
+                    const auth = getSavedAuth();
+                    const preferred = queryTeam || (auth && auth.event_id === currentEventId ? auth.team : '');
+
+                    if (preferred && teamsData.teams.some(t => t.team_name === preferred)) {
+                        teamEl.value = preferred;
+                    }
+                } else {
+                    teamEl.innerHTML = '<option value="">No teams added to this event yet</option>';
+                }
+
+                updateSavedAuthUI();
+                updateReminder();
+            } catch (e) {
+                eventEl.classList.add('inactive');
+                eventEl.textContent = '⚠️ Could not load event status';
+            }
+        }
+
+        async function submitLocation() {
+            const team = teamEl.value;
+            const auth = getSavedAuth();
+            const usingSavedToken = Boolean(auth && auth.event_id === currentEventId && auth.team === team && auth.token);
+            const pin = pinEl.value.trim();
+
+            if (!team) {
+                setStatus('Please select your team.', 'error');
+                return;
+            }
+
+            if (!usingSavedToken && !pin) {
+                setStatus('Please enter your team PIN.', 'error');
+                return;
+            }
+
+            setStatus('Getting location…');
+
+            if (!navigator.geolocation) {
+                setStatus('Location is not supported on this device.', 'error');
+                return;
+            }
+
+            shareButton.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(async pos => {
+                try {
+                    const payload = {
+                        team,
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    };
+
+                    if (usingSavedToken) {
+                        payload.team_token = auth.token;
+                    } else {
+                        payload.pin = pin;
+                        payload.remember_device = true;
+                    }
+
+                    const res = await fetch('api.php', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        cache: 'no-store',
+                        body: JSON.stringify(payload)
+                    });
+
+                    const json = await res.json();
+
+                    if (json.success) {
+                        lastPingTime = Date.now();
+                        localStorage.setItem(LAST_PING_KEY, String(lastPingTime));
+
+                        if (json.team_token && currentEventId) {
+                            setSavedAuth({
+                                event_id: currentEventId,
+                                team: team,
+                                token: json.team_token
+                            });
+                        }
+
+                        pinEl.value = '';
+                        updateSavedAuthUI();
+                        updateReminder();
+                        window.location.href = 'success.html?team=' + encodeURIComponent(team);
+                        return;
+                    }
+
+                    if ((json.invalid_saved_team_token || json.require_pin) && usingSavedToken) {
+                        clearSavedAuth('Saved access expired. Please enter the team PIN again.');
+                    }
+
+                    if (json.retry_in_seconds) {
+                        const mins = Math.ceil(Number(json.retry_in_seconds) / 60);
+                        setStatus((json.error || 'Please wait before sending another update.') + ` Try again in about ${mins} minute${mins === 1 ? '' : 's'}.`, 'error');
+                    } else {
+                        setStatus(json.error || 'Please wait before trying again.', 'error');
+                    }
+                } catch (err) {
+                    setStatus('Connection issue – try again.', 'error');
+                } finally {
+                    shareButton.disabled = false;
+                }
+            }, () => {
+                setStatus('Please allow location access.', 'error');
+                shareButton.disabled = false;
+            }, {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            });
+        }
+
+        teamEl.addEventListener('change', () => {
+            updateSavedAuthUI();
+            setStatus('');
+        });
+
+        document.getElementById('shareButton').addEventListener('click', submitLocation);
+
+        loadActiveEventAndTeams();
+        updateReminder();
+        setInterval(updateReminder, 30000);
+    </script>
+</body>
+</html>

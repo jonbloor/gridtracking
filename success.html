@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Success • Grid Tracking</title>
+    <meta name="theme-color" content="#7413dc">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        :root {
+            --brand: #7413dc;
+            --success: #0b6b3a;
+            --text: #1f2937;
+            --muted: #4b5563;
+            --bg: #eef6f0;
+            --card: #ffffff;
+            --border: #cbe6d3;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .card {
+            width: 100%;
+            max-width: 460px;
+            background: var(--card);
+            border-radius: 18px;
+            padding: 32px 28px;
+            text-align: center;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            margin: 0 0 14px;
+            color: var(--success);
+            font-size: 2.2rem;
+            line-height: 1.15;
+        }
+
+        .note {
+            font-size: 1.08rem;
+            line-height: 1.6;
+            margin: 0 0 22px;
+        }
+
+        .countdown {
+            color: var(--brand);
+            font-weight: 800;
+        }
+
+        button {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 18px;
+            background: var(--success);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .small {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-links a {
+            color: var(--brand);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>✅ Location Shared!</h1>
+
+        <p class="note">
+            Latest update sent for <strong id="scoutTeam">your team</strong>.<br><br>
+            <strong>If you are lost, stay still</strong> and keep your phone available.<br>
+            Leaders can now see your latest location.<br><br>
+            Returning to the start page in <span class="countdown" id="countdown">15</span> seconds…
+        </p>
+
+        <button id="backButton" type="button">Back to start now</button>
+        <p class="small">You can send another update later if a leader asks you to.</p>
+        <p class="footer-links"><a href="privacy.php">Privacy notice</a> • <a href="privacy-young-people.php">Young people’s privacy page</a></p>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const team = params.get('team') || 'your team';
+
+        document.getElementById('scoutTeam').textContent = team;
+
+        document.getElementById('backButton').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        let secondsRemaining = 15;
+        const countdownEl = document.getElementById('countdown');
+
+        const timer = setInterval(() => {
+            secondsRemaining -= 1;
+            countdownEl.textContent = String(secondsRemaining);
+
+            if (secondsRemaining <= 0) {
+                clearInterval(timer);
+                window.location.href = 'index.html';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
