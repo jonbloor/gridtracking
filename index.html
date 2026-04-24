@@ -14,169 +14,37 @@
     <meta name="theme-color" content="#2E7D32">
 
     <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            background: #f4f4f4;
-            color: #222;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: #2E7D32;
-            color: white;
-            padding: 16px 20px;
-            border-radius: 16px 16px 0 0;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 1.7rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 0 0 16px 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        label {
-            display: block;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        select,
-        input,
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 16px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        button {
-            background: #2E7D32;
-            color: white;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-        }
-
-        .status {
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin: 12px 0;
-            font-weight: 600;
-        }
-
-        .status-ok {
-            background: #edf7ed;
-            color: #216e39;
-        }
-
-        .status-error {
-            background: #fdeaea;
-            color: #8a1f1f;
-        }
-
-        .status-info {
-            background: #e8f1fb;
-            color: #174ea6;
-        }
-
-        .muted {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .info-box {
-            background: #e8f5e9;
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 0.95rem;
-        }
-
-        .event-info {
-            background: #f0f7f0;
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 1.05rem;
-            font-weight: 700;
-        }
-
-        .saved-access {
-            display: none;
-            background: #eef6ff;
-            border: 1px solid #b9d6ff;
-            color: #173b73;
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 0.95rem;
-        }
-
-        .cooldown-box {
-            display: none;
-            background: #fff3cd;
-            color: #684f00;
-            border: 1px solid #ffe08a;
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-weight: 700;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 12px 0;
-            font-size: 0.9rem;
-        }
-
-        .footer a {
-            color: #1565C0;
-            text-decoration: none;
-            margin: 0 6px;
-        }
-
-        .inline-check {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .inline-check input {
-            width: auto;
-            margin: 0;
-        }
-
-        .secondary {
-            background: #6c757d;
-        }
-
-        .blue {
-            background: #1565C0;
-        }
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f4f4f4; color: #222; }
+        .container { max-width: 480px; margin: 0 auto; padding: 20px; }
+        .header { background: #2E7D32; color: white; padding: 16px 20px; border-radius: 16px 16px 0 0; }
+        .header h1 { margin: 0; font-size: 1.7rem; }
+        .card { background: white; border-radius: 0 0 16px 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        label { display: block; font-weight: 700; margin-bottom: 6px; }
+        select, input, button { width: 100%; padding: 14px; margin-bottom: 16px; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; box-sizing: border-box; }
+        button { background: #2E7D32; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:disabled { opacity: 0.65; cursor: not-allowed; }
+        .status { padding: 12px 16px; border-radius: 10px; margin: 12px 0; font-weight: 600; }
+        .status-ok { background: #edf7ed; color: #216e39; }
+        .status-error { background: #fdeaea; color: #8a1f1f; }
+        .status-info { background: #e8f1fb; color: #174ea6; }
+        .muted { color: #666; font-size: 0.9rem; }
+        .info-box { background: #e8f5e9; padding: 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.95rem; }
+        .event-info { background: #f0f7f0; padding: 14px; border-radius: 12px; margin-bottom: 16px; font-size: 1.05rem; font-weight: 700; }
+        .event-prefix { color:#216e39; font-size:0.95rem; }
+        .instruction-box { background:#eef6ff; border:1px solid #b9d6ff; color:#173b73; padding:14px; border-radius:12px; margin-bottom:16px; font-size:0.95rem; }
+        .saved-access { display: none; background: #eef6ff; border: 1px solid #b9d6ff; color: #173b73; padding: 14px; border-radius: 12px; margin-bottom: 16px; font-size: 0.95rem; }
+        .cooldown-box { display: none; background: #fff3cd; color: #684f00; border: 1px solid #ffe08a; padding: 14px; border-radius: 12px; margin-bottom: 16px; font-weight: 700; }
+        .last-checkin { display:none; background:#f7f7f7; border:1px solid #e0e0e0; color:#333; padding:12px; border-radius:12px; margin-bottom:16px; font-size:0.95rem; }
+        .safety-box { background:#fff3cd; padding:12px; border-radius:10px; font-size:0.95rem; margin-top:16px; }
+        .footer { text-align: center; padding: 12px 0; font-size: 0.9rem; }
+        .footer a { color: #1565C0; text-decoration: none; margin: 0 6px; }
+        .inline-check { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 500; }
+        .inline-check input { width: auto; margin: 0; }
+        .secondary { background: #6c757d; }
+        .blue { background: #1565C0; }
+        .outline { background:#fff; color:#1565C0; border:2px solid #1565C0; }
+        .small-row { display:grid; grid-template-columns:1fr; gap:0; }
+        .app-version { text-align:center; color:#777; font-size:0.8rem; margin-top:8px; }
     </style>
 </head>
 
@@ -190,13 +58,19 @@
         <div class="card">
             <div class="info-box">
                 <strong>What is this app for?</strong><br>
-                This lets your team share their current location during events so authorised leaders know where each group is.
-                You can only check in every 5 minutes.
+                This lets your team share their current location during an event so authorised leaders know where each group is.
+                Your location is only visible to authorised leaders for this event and is deleted automatically.
             </div>
 
             <div id="eventInfo" class="event-info">Loading event...</div>
 
+            <div id="instructionBox" class="instruction-box" style="display:none;">
+                Check in regularly during the activity, and immediately if you need help.
+            </div>
+
             <div id="savedAccessBox" class="saved-access"></div>
+
+            <div id="lastCheckinBox" class="last-checkin"></div>
 
             <div id="cooldownBox" class="cooldown-box"></div>
 
@@ -226,23 +100,33 @@
                 <button type="submit" id="submitBtn">📍 Check In Now</button>
             </form>
 
+            <button id="gpsTestBtn" type="button" class="outline">Check my location permission</button>
+
             <button id="reminderBtn" type="button" class="blue">
-                🔔 Enable 10-minute reminders while this app is open
+                🔔 Enable reminders while this app is open
             </button>
 
-            <div style="background:#fff3cd; padding:12px; border-radius:10px; font-size:0.95rem; margin-top:16px;">
-                <strong>⚠️ If you are lost stay still and together.</strong>
+            <div class="safety-box">
+                <strong>⚠️ If you are lost, stay still and stay together.</strong><br>
+                Use this app to check in if you can. If you are in immediate danger, call 999 or contact a leader directly.
             </div>
 
             <div class="footer">
                 <a href="privacy.php">Privacy notice</a> •
                 <a href="privacy-young-people.php">For young people</a>
             </div>
+
+            <div class="app-version" id="appVersion">Version 2026-04-24-2</div>
         </div>
     </div>
 
     <script>
-        const RATE_LIMIT_SECONDS = 5 * 60;
+        const APP_CONFIG = {
+            appVersion: '2026-04-24-2',
+            rateLimitMinutes: 5,
+            reminderMinutes: 10,
+            staleMinutes: 10
+        };
 
         let currentEventId = null;
         let lastPingTime = localStorage.getItem('gridTracking_lastPingTime')
@@ -260,11 +144,26 @@
         const pinEl = document.getElementById('pin');
         const submitBtn = document.getElementById('submitBtn');
         const reminderBtn = document.getElementById('reminderBtn');
+        const gpsTestBtn = document.getElementById('gpsTestBtn');
         const savedAccessBox = document.getElementById('savedAccessBox');
         const cooldownBox = document.getElementById('cooldownBox');
+        const lastCheckinBox = document.getElementById('lastCheckinBox');
+        const instructionBox = document.getElementById('instructionBox');
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(console.error);
+            navigator.serviceWorker.register('sw.js?v=' + encodeURIComponent(APP_CONFIG.appVersion)).catch(console.error);
+        }
+
+        function applyRemoteConfig(config) {
+            if (!config) return;
+
+            APP_CONFIG.rateLimitMinutes = Math.max(1, parseInt(config.rate_limit_minutes || APP_CONFIG.rateLimitMinutes, 10));
+            APP_CONFIG.reminderMinutes = Math.max(1, parseInt(config.reminder_minutes || APP_CONFIG.reminderMinutes, 10));
+            APP_CONFIG.staleMinutes = Math.max(1, parseInt(config.stale_minutes || APP_CONFIG.staleMinutes, 10));
+
+            localStorage.setItem('gridTracking_appConfig', JSON.stringify(APP_CONFIG));
+
+            reminderBtn.textContent = `🔔 Enable ${APP_CONFIG.reminderMinutes}-minute reminders while this app is open`;
         }
 
         function getSavedAuth() {
@@ -288,22 +187,16 @@
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
 
-            if (mins > 0 && secs > 0) {
-                return `Please wait ${mins} min ${secs} sec before checking in again.`;
-            }
-
-            if (mins > 0) {
-                return `Please wait ${mins} min before checking in again.`;
-            }
-
+            if (mins > 0 && secs > 0) return `Please wait ${mins} min ${secs} sec before checking in again.`;
+            if (mins > 0) return `Please wait ${mins} min before checking in again.`;
             return `Please wait ${secs} sec before checking in again.`;
         }
 
         function getLocalCooldownSeconds() {
             if (!lastPingTime) return 0;
-
+            const rateLimitSeconds = APP_CONFIG.rateLimitMinutes * 60;
             const elapsedSeconds = Math.floor((Date.now() - lastPingTime) / 1000);
-            return Math.max(0, RATE_LIMIT_SECONDS - elapsedSeconds);
+            return Math.max(0, rateLimitSeconds - elapsedSeconds);
         }
 
         function getActiveCooldownSeconds() {
@@ -329,14 +222,29 @@
                 submitBtn.textContent = '📍 Check In Now';
                 serverCooldownUntil = 0;
             }
+
+            updateLastCheckinDisplay();
         }
 
         function startCooldownTicker() {
             if (cooldownTimer) clearInterval(cooldownTimer);
-
             updateCooldownDisplay();
-
             cooldownTimer = setInterval(updateCooldownDisplay, 1000);
+        }
+
+        function updateLastCheckinDisplay() {
+            if (!lastPingTime) {
+                lastCheckinBox.style.display = 'none';
+                return;
+            }
+
+            const timeText = new Date(lastPingTime).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            lastCheckinBox.innerHTML = `<strong>Last successful check-in from this device:</strong> ${timeText}`;
+            lastCheckinBox.style.display = 'block';
         }
 
         async function refreshServerCooldown() {
@@ -344,10 +252,7 @@
             if (!team || !currentEventId) return;
 
             try {
-                const res = await fetch(`api.php?action=check_cooldown&team=${encodeURIComponent(team)}`, {
-                    cache: 'no-store'
-                });
-
+                const res = await fetch(`api.php?action=check_cooldown&team=${encodeURIComponent(team)}`, { cache: 'no-store' });
                 const data = await res.json();
 
                 if (data.retry_in_seconds && data.retry_in_seconds > 0) {
@@ -367,18 +272,29 @@
                 const statusRes = await fetch('api.php?action=status', { cache: 'no-store' });
                 const statusData = await statusRes.json();
 
+                applyRemoteConfig(statusData.config);
+
+                if (statusData.app_version) {
+                    document.getElementById('appVersion').textContent = `Version ${statusData.app_version}`;
+                }
+
                 if (statusData.error || !statusData.active) {
-                    eventInfoEl.innerHTML = '<strong style="color:#c62828">No active event right now.</strong>';
+                    eventInfoEl.innerHTML = '<strong style="color:#c62828">Grid Tracking is currently switched off.</strong><br><span style="font-size:0.9rem; font-weight:400;">No location can be submitted until a leader turns an event on.</span>';
+                    instructionBox.style.display = 'none';
+                    teamEl.innerHTML = '<option value="">No active event</option>';
                     submitBtn.disabled = true;
+                    gpsTestBtn.disabled = false;
                     return;
                 }
 
                 currentEventId = statusData.event_id;
 
-				eventInfoEl.innerHTML =
-    			`<span style="color:#216e39;">Event:</span> ${escapeHtml(statusData.event_name)}<br>
-    			 <span style="font-size:0.9rem; font-weight:400; color:#216e39;">✓ Tracking is live</span>`;
-              
+                eventInfoEl.innerHTML =
+                    `<span class="event-prefix">Event:</span> ${escapeHtml(statusData.event_name)}<br>
+                     <span style="font-size:0.9rem; font-weight:400; color:#216e39;">✓ Tracking is live</span>`;
+
+                instructionBox.style.display = 'block';
+
                 const teamsRes = await fetch('api.php?action=active_teams', { cache: 'no-store' });
                 const data = await teamsRes.json();
                 const teams = data.teams || [];
@@ -393,6 +309,7 @@
                 });
 
                 checkSavedAuth();
+                updateLastCheckinDisplay();
                 startCooldownTicker();
                 refreshServerCooldown();
 
@@ -457,12 +374,7 @@
             submitBtn.textContent = 'Getting location...';
 
             try {
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true,
-                        timeout: 15000
-                    });
-                });
+                const position = await getCurrentPosition();
 
                 const payload = {
                     team: team,
@@ -533,6 +445,30 @@
             }
         }
 
+        function getCurrentPosition() {
+            return new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 15000
+                });
+            });
+        }
+
+        async function testGpsPermission() {
+            gpsTestBtn.disabled = true;
+            gpsTestBtn.textContent = 'Checking location...';
+
+            try {
+                await getCurrentPosition();
+                showStatus('✅ Location permission is working. You are ready to check in.', 'ok');
+            } catch (err) {
+                showStatus('Location permission is not working yet. Please allow location access for this site and try again.', 'error');
+            } finally {
+                gpsTestBtn.disabled = false;
+                gpsTestBtn.textContent = 'Check my location permission';
+            }
+        }
+
         function showStatus(msg, type) {
             statusEl.textContent = msg;
             statusEl.className = `status status-${type}`;
@@ -547,13 +483,11 @@
         }
 
         async function showReminderNotification() {
-            if (!('Notification' in window) || Notification.permission !== 'granted') {
-                return;
-            }
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
             const title = '⏰ Grid Tracking Reminder';
             const options = {
-                body: "You haven't checked in for 10 minutes. Please send a location update.",
+                body: `You have not checked in for ${APP_CONFIG.reminderMinutes} minutes. Please send a location update if a leader has asked you to.`,
                 icon: 'android-chrome-192x192.png',
                 badge: 'favicon-32x32.png',
                 tag: 'gridtracking-reminder',
@@ -580,13 +514,11 @@
                 notificationPermissionGranted = true;
                 localStorage.setItem('gridTracking_notificationsEnabled', 'true');
 
-                if (!lastPingTime) {
-                    updateLastPingTime();
-                }
+                if (!lastPingTime) updateLastPingTime();
 
                 startInactivityTimer();
 
-                reminderBtn.textContent = '✅ Reminders enabled while this app is open';
+                reminderBtn.textContent = `✅ ${APP_CONFIG.reminderMinutes}-minute reminders enabled while this app is open`;
                 reminderBtn.style.background = '#216e39';
                 reminderBtn.disabled = true;
 
@@ -602,7 +534,7 @@
                 'Notification' in window &&
                 Notification.permission === 'granted'
             ) {
-                reminderBtn.textContent = '✅ Reminders enabled while this app is open';
+                reminderBtn.textContent = `✅ ${APP_CONFIG.reminderMinutes}-minute reminders enabled while this app is open`;
                 reminderBtn.style.background = '#216e39';
                 reminderBtn.disabled = true;
                 notificationPermissionGranted = true;
@@ -618,10 +550,8 @@
 
                 const minutes = (Date.now() - lastPingTime) / 1000 / 60;
 
-                if (minutes >= 10 && notificationPermissionGranted) {
+                if (minutes >= APP_CONFIG.reminderMinutes && notificationPermissionGranted) {
                     await showReminderNotification();
-
-                    // Prevent repeated notifications every minute.
                     lastPingTime = Date.now();
                     localStorage.setItem('gridTracking_lastPingTime', String(lastPingTime));
                     startCooldownTicker();
@@ -649,10 +579,12 @@
         });
 
         reminderBtn.addEventListener('click', enableReminders);
+        gpsTestBtn.addEventListener('click', testGpsPermission);
 
         window.onload = () => {
             loadEventAndTeams();
             checkReminderStatus();
+            updateLastCheckinDisplay();
         };
     </script>
 </body>

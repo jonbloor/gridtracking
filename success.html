@@ -24,9 +24,7 @@
             --border: #cbe6d3;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -51,23 +49,9 @@
             border: 1px solid var(--border);
         }
 
-        h1 {
-            margin: 0 0 14px;
-            color: var(--success);
-            font-size: 2.2rem;
-            line-height: 1.15;
-        }
-
-        .note {
-            font-size: 1.08rem;
-            line-height: 1.6;
-            margin: 0 0 22px;
-        }
-
-        .countdown {
-            color: var(--brand);
-            font-weight: 800;
-        }
+        h1 { margin: 0 0 14px; color: var(--success); font-size: 2.2rem; line-height: 1.15; }
+        .note { font-size: 1.08rem; line-height: 1.6; margin: 0 0 22px; }
+        .countdown { color: var(--brand); font-weight: 800; }
 
         .cooldown-note {
             background: #fff3cd;
@@ -91,22 +75,9 @@
             cursor: pointer;
         }
 
-        .small {
-            margin-top: 14px;
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .footer-links {
-            margin-top: 14px;
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .footer-links a {
-            color: var(--brand);
-            font-weight: 600;
-        }
+        .small { margin-top: 14px; color: var(--muted); font-size: 0.95rem; }
+        .footer-links { margin-top: 14px; color: var(--muted); font-size: 0.95rem; }
+        .footer-links a { color: var(--brand); font-weight: 600; }
     </style>
 </head>
 
@@ -116,7 +87,7 @@
 
         <p class="note">
             Latest update sent for <strong id="scoutTeam">your team</strong>.<br><br>
-            <strong>If you are lost, stay still</strong> and keep your phone available.<br>
+            <strong>If you are lost, stay still and stay together.</strong><br>
             Leaders can now see your latest location.
         </p>
 
@@ -130,7 +101,7 @@
 
         <button id="backButton" type="button">Back to start now</button>
 
-        <p class="small">You can send another update later if a leader asks you to.</p>
+        <p class="small">Only send another update when asked by a leader, or if you need help.</p>
 
         <p class="footer-links">
             <a href="privacy.php">Privacy notice</a> •
@@ -141,6 +112,17 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         const team = params.get('team') || 'your team';
+
+        let appConfig = {
+            rateLimitMinutes: 5
+        };
+
+        try {
+            const savedConfig = localStorage.getItem('gridTracking_appConfig');
+            if (savedConfig) {
+                appConfig = { ...appConfig, ...JSON.parse(savedConfig) };
+            }
+        } catch (e) {}
 
         document.getElementById('scoutTeam').textContent = team;
 
@@ -167,7 +149,7 @@
                 : Date.now();
 
             const elapsedSeconds = Math.floor((Date.now() - lastPingTime) / 1000);
-            const remainingSeconds = Math.max(0, (5 * 60) - elapsedSeconds);
+            const remainingSeconds = Math.max(0, (Number(appConfig.rateLimitMinutes || 5) * 60) - elapsedSeconds);
 
             const mins = Math.floor(remainingSeconds / 60);
             const secs = remainingSeconds % 60;

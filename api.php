@@ -7,6 +7,27 @@ header('Pragma: no-cache');
 
 $action = $_GET['action'] ?? '';
 
+function ensure_event_settings_columns(PDO $pdo): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+    $checked = true;
+
+    $columns = [
+        'rate_limit_minutes' => "ALTER TABLE events ADD COLUMN rate_limit_minutes INT NOT NULL DEFAULT 5",
+        'reminder_minutes' => "ALTER TABLE events ADD COLUMN reminder_minutes INT NOT NULL DEFAULT 10",
+        'stale_minutes' => "ALTER TABLE events ADD COLUMN stale_minutes INT NOT NULL DEFAULT 10",
+    ];
+
+    foreach ($columns as $column => $sql) {
+        $stmt = $pdo->query("SHOW COLUMNS FROM events LIKE " . $pdo->quote($column));
+        if (!$stmt->fetch()) {
+            $pdo->exec($sql);
+        }
+    }
+}
+
 function ensure_team_device_tokens_table(PDO $pdo): void {
     static $checked = false;
     if ($checked) {
@@ -30,6 +51,29 @@ function ensure_team_device_tokens_table(PDO $pdo): void {
     );
 
     $pdo->exec("DELETE FROM team_device_tokens WHERE expires_at < NOW()");
+}
+
+function event_rate_limit_minutes(array $event): int {
+    $value = (int)($event['rate_limit_minutes'] ?? 0);
+    return $value > 0 ? min($value, 60) : (defined('RATE_LIMIT_MINUTES') ? RATE_LIMIT_MINUTES : 5);
+}
+
+function event_reminder_minutes(array $event): int {
+    $value = (int)($event['reminder_minutes'] ?? 0);
+    return $value > 0 ? min($value, 180) : 10;
+}
+
+function event_stale_minutes(array $event): int {
+    $value = (int)($event['stale_minutes'] ?? 0);
+    return $value > 0 ? min($value, 180) : max(event_rate_limit_minutes($event), 10);
+}
+
+function event_public_config(array $event): array {
+    return [
+        'rate_limit_minutes' => event_rate_limit_minutes($event),
+        'reminder_minutes' => event_reminder_minutes($event),
+        'stale_minutes' => event_stale_minutes($event),
+    ];
 }
 
 function issue_team_device_token(PDO $pdo, int $eventId, string $teamName, int $hours = 12): string {
@@ -78,7 +122,7 @@ function validate_team_device_token(PDO $pdo, int $eventId, string $teamName, st
     return true;
 }
 
-function get_retry_seconds_for_team(PDO $pdo, int $eventId, string $team): int {
+function get_retry_seconds_for_team(PDO $pdo, int $eventId, string $team, int $rateLimitMinutes): int {
     $stmt = $pdo->prepare(
         'SELECT timestamp
          FROM locations
@@ -94,20 +138,29 @@ function get_retry_seconds_for_team(PDO $pdo, int $eventId, string $team): int {
     }
 
     $secondsSince = time() - strtotime((string)$lastTimestamp);
-    $waitSeconds = (RATE_LIMIT_MINUTES * 60) - $secondsSince;
+    $waitSeconds = ($rateLimitMinutes * 60) - $secondsSince;
 
     return max(0, (int)$waitSeconds);
 }
 
 try {
+    ensure_event_settings_columns($pdo);
     ensure_team_device_tokens_table($pdo);
 
     if ($action === 'status') {
         $event = get_active_event($pdo);
+        $active = get_platform_on($pdo) && $event !== null;
+
         json_response([
-            'active' => get_platform_on($pdo) && $event !== null,
+            'active' => $active,
             'event_id' => $event['id'] ?? null,
             'event_name' => $event['event_name'] ?? null,
+            'config' => $event ? event_public_config($event) : [
+                'rate_limit_minutes' => defined('RATE_LIMIT_MINUTES') ? RATE_LIMIT_MINUTES : 5,
+                'reminder_minutes' => 10,
+                'stale_minutes' => 10,
+            ],
+            'app_version' => '2026-04-24-2',
         ]);
     }
 
@@ -139,6 +192,7 @@ try {
         }
 
         $eventId = (int)$activeEvent['id'];
+        $rateLimitMinutes = event_rate_limit_minutes($activeEvent);
 
         $stmt = $pdo->prepare(
             'SELECT id
@@ -153,13 +207,13 @@ try {
             json_response(['error' => 'That team is not part of the active event'], 422);
         }
 
-        $retrySeconds = get_retry_seconds_for_team($pdo, $eventId, $team);
+        $retrySeconds = get_retry_seconds_for_team($pdo, $eventId, $team, $rateLimitMinutes);
 
         json_response([
             'success' => true,
             'can_submit' => $retrySeconds <= 0,
             'retry_in_seconds' => $retrySeconds,
-            'rate_limit_minutes' => RATE_LIMIT_MINUTES,
+            'rate_limit_minutes' => $rateLimitMinutes,
         ]);
     }
 
@@ -175,6 +229,12 @@ try {
             json_response([
                 'event_name' => null,
                 'locations' => [],
+                'stale_teams' => [],
+                'settings' => [
+                    'rate_limit_minutes' => defined('RATE_LIMIT_MINUTES') ? RATE_LIMIT_MINUTES : 5,
+                    'reminder_minutes' => 10,
+                    'stale_minutes' => 10,
+                ],
                 'stats' => [
                     'team_count' => 0,
                     'teams_plotted' => 0,
@@ -185,6 +245,8 @@ try {
         }
 
         $eventId = (int)$activeEvent['id'];
+        $settings = event_public_config($activeEvent);
+        $staleMinutes = (int)$settings['stale_minutes'];
 
         $stmt = $pdo->prepare(
             'SELECT
@@ -227,13 +289,23 @@ try {
         $teamCount = count($locations);
         $teamsPlotted = 0;
         $teamsStale = 0;
+        $staleTeams = [];
 
         foreach ($locations as $row) {
-            if ((int)$row['has_location'] === 1) {
+            $hasLocation = (int)$row['has_location'] === 1;
+            $minutesAgo = $row['minutes_ago'] !== null ? (int)$row['minutes_ago'] : null;
+
+            if ($hasLocation) {
                 $teamsPlotted++;
             }
-            if ($row['minutes_ago'] !== null && (int)$row['minutes_ago'] > RATE_LIMIT_MINUTES) {
+
+            if (!$hasLocation || ($minutesAgo !== null && $minutesAgo >= $staleMinutes)) {
                 $teamsStale++;
+                $staleTeams[] = [
+                    'team' => $row['team'],
+                    'minutes_ago' => $minutesAgo,
+                    'has_location' => $hasLocation,
+                ];
             }
         }
 
@@ -244,6 +316,8 @@ try {
         json_response([
             'event_name' => $activeEvent['event_name'],
             'locations' => $locations,
+            'stale_teams' => $staleTeams,
+            'settings' => $settings,
             'stats' => [
                 'team_count' => $teamCount,
                 'teams_plotted' => $teamsPlotted,
@@ -334,6 +408,7 @@ try {
         }
 
         $eventId = (int)$activeEvent['id'];
+        $rateLimitMinutes = event_rate_limit_minutes($activeEvent);
 
         $stmt = $pdo->prepare(
             'SELECT id, team_pin_hash
@@ -368,7 +443,7 @@ try {
             }
         }
 
-        $retrySeconds = get_retry_seconds_for_team($pdo, $eventId, $team);
+        $retrySeconds = get_retry_seconds_for_team($pdo, $eventId, $team, $rateLimitMinutes);
 
         if ($retrySeconds > 0) {
             json_response([
