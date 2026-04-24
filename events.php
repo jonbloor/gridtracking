@@ -104,13 +104,13 @@ if (!function_exists('delete_event_locations')) {
     }
 }
 if (!function_exists('create_user_account')) {
-    function create_user_account(PDO $pdo, string $email, string $password, string $fullName = '', bool $isOrganiser = false): int {
+    function create_user_account(PDO $pdo, string $username, string $password, string $fullName = '', bool $isOrganiser = false): int {
         $stmt = $pdo->prepare(
-            'INSERT INTO users (email, password_hash, full_name, is_organiser)
+            'INSERT INTO users (username, password_hash, full_name, is_organiser)
              VALUES (?, ?, ?, ?)'
         );
         $stmt->execute([
-            $email,
+            $username,
             password_hash($password, PASSWORD_DEFAULT),
             mb_substr($fullName, 0, 100),
             $isOrganiser ? 1 : 0,
@@ -382,19 +382,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'add_existing_leader') {
         $eventId = (int)($_POST['event_id'] ?? 0);
-        $email = trim((string)($_POST['leader_email'] ?? ''));
+        $username = trim((string)($_POST['leader_username'] ?? ''));
 
         if (!user_owns_event($pdo, $userId, $eventId)) {
             $error = 'Only the organiser can manage extra leaders.';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid leader email address.';
+        } elseif ($username === '') {
+            $error = 'Please enter a leader username.';
         } else {
-            $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
-            $stmt->execute([$email]);
+            $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ? LIMIT 1');
+            $stmt->execute([$username]);
             $leader = $stmt->fetch();
 
             if (!$leader) {
-                $error = 'No user account exists with that email address yet.';
+                $error = 'No user account exists with that username yet.';
             } else {
                 $leaderId = (int)$leader['id'];
                 $stmt = $pdo->prepare('SELECT COUNT(*) FROM event_leaders WHERE event_id = ? AND user_id = ?');
@@ -414,25 +414,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'create_and_add_leader') {
         $eventId = (int)($_POST['event_id'] ?? 0);
         $fullName = trim((string)($_POST['leader_name'] ?? ''));
-        $email = trim((string)($_POST['leader_email_new'] ?? ''));
+        $username = trim((string)($_POST['leader_username_new'] ?? ''));
         $password = (string)($_POST['leader_password'] ?? '');
 
         if (!user_owns_event($pdo, $userId, $eventId)) {
             $error = 'Only the organiser can create extra leader logins.';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid email address for the leader.';
+        } elseif ($username === '') {
+            $error = 'Please enter a username for the leader.';
         } elseif (strlen($password) < 10) {
             $error = 'Please use a password of at least 10 characters for the leader account.';
         } else {
-            $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
-            $stmt->execute([$email]);
+            $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ? LIMIT 1');
+            $stmt->execute([$username]);
             $existing = $stmt->fetch();
             if ($existing) {
-                $error = 'That email address already has an account. Use the existing leader form instead.';
+                $error = 'That username already has an account. Use the existing leader form instead.';
             } else {
                 $pdo->beginTransaction();
                 try {
-                    $leaderId = create_user_account($pdo, $email, $password, $fullName, false);
+                    $leaderId = create_user_account($pdo, $username, $password, $fullName, false);
                     $stmt = $pdo->prepare('INSERT INTO event_leaders (event_id, user_id) VALUES (?, ?)');
                     $stmt->execute([$eventId, $leaderId]);
                     $pdo->commit();
@@ -648,11 +648,11 @@ $palette = team_colour_palette();
         $teams = $stmt->fetchAll();
 
         $stmt = $pdo->prepare(
-            'SELECT u.id, u.full_name, u.email
+            'SELECT u.id, u.full_name, u.username
              FROM event_leaders el
              INNER JOIN users u ON u.id = el.user_id
              WHERE el.event_id = ?
-             ORDER BY COALESCE(u.full_name, u.email), u.email'
+             ORDER BY COALESCE(u.full_name, u.username), u.username'
         );
         $stmt->execute([$eventId]);
         $leaders = $stmt->fetchAll();
@@ -772,8 +772,8 @@ $palette = team_colour_palette();
                         <ul class="clean leader-list">
                             <?php foreach ($leaders as $leader): ?>
                                 <li>
-                                    <?= h($leader['full_name'] ?: $leader['email']) ?>
-                                    <span class="muted">(<?= h($leader['email']) ?>)</span>
+                                    <?= h($leader['full_name'] ?: $leader['username']) ?>
+                                    <span class="muted">(<?= h($leader['username']) ?>)</span>
                                     <?php if ($isOwner): ?>
                                         <form method="post" style="display:inline-block; margin-left:8px;" onsubmit="return confirm('Remove this leader from the event?');">
                                             <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
@@ -796,8 +796,8 @@ $palette = team_colour_palette();
                             <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
                             <input type="hidden" name="action" value="add_existing_leader">
                             <input type="hidden" name="event_id" value="<?= $eventId ?>">
-                            <label>Add existing account by email</label>
-                            <input type="email" name="leader_email" placeholder="leader@example.org" required>
+                            <label>Add existing account by username</label>
+                            <input type="text" name="leader_username" placeholder="e.g. Bloory" required>
                             <button class="btn btn-secondary" type="submit">Add existing leader</button>
                         </form>
 
@@ -807,9 +807,9 @@ $palette = team_colour_palette();
                             <input type="hidden" name="action" value="create_and_add_leader">
                             <input type="hidden" name="event_id" value="<?= $eventId ?>">
                             <label>Create a new leader login</label>
-                            <input type="text" name="leader_name" maxlength="100" placeholder="Leader name">
-                            <input type="email" name="leader_email_new" placeholder="leader@example.org" required>
-                            <input type="password" name="leader_password" placeholder="Temporary password" required>
+                            <input type="text" name="leader_name" maxlength="100" placeholder="Leader name (optional)">
+                            <input type="text" name="leader_username_new" placeholder="e.g. Blossom" required>
+                            <input type="password" name="leader_password" placeholder="Temporary password (min 10 chars)" required>
                             <button class="btn btn-primary" type="submit">Create and add leader</button>
                         </form>
                     <?php endif; ?>

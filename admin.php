@@ -17,21 +17,21 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login') {
     verify_csrf_token();
 
-    $email = trim((string)($_POST['email'] ?? ''));
+    $username = trim((string)($_POST['username'] ?? ''));
     $password = (string)($_POST['password'] ?? '');
 
-    if ($email === '' || $password === '') {
-        $error = 'Please enter your email and password.';
+    if ($username === '' || $password === '') {
+        $error = 'Please enter your username and password.';
     } else {
-        $stmt = $pdo->prepare('SELECT id, email, password_hash, full_name, is_organiser FROM users WHERE email = ? LIMIT 1');
-        $stmt->execute([$email]);
+        $stmt = $pdo->prepare('SELECT id, username, password_hash, full_name, is_organiser FROM users WHERE username = ? LIMIT 1');
+        $stmt->execute([$username]);
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password_hash'])) {
             session_regenerate_id(true);
             $_SESSION['is_admin'] = 1;
             $_SESSION['user_id'] = (int)$user['id'];
-            $_SESSION['full_name'] = $user['full_name'] ?: $user['email'];
+            $_SESSION['full_name'] = $user['full_name'] ?: $user['username'];
             $_SESSION['is_organiser'] = (int)$user['is_organiser'];
             header('Location: admin.php');
             exit;
@@ -75,8 +75,8 @@ if (!is_admin_logged_in()) {
             <input type="hidden" name="action" value="login">
             <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
             <label>
-                <span>Email</span>
-                <input type="email" name="email" required autocomplete="username">
+                <span>Username</span>
+                <input type="text" name="username" required autocomplete="username" placeholder="e.g. Bloory">
             </label>
             <label>
                 <span>Password</span>
@@ -84,7 +84,7 @@ if (!is_admin_logged_in()) {
             </label>
             <button type="submit">Sign in</button>
         </form>
-        <p class="meta" style="margin-top:18px;">Need an account? Use <a href="register.php">register.php</a> for the first organiser, or create extra leader accounts from the events screen later.</p>
+        <p class="meta" style="margin-top:18px;">Need an account? Use <a href="register.php">register.php</a> for the first organiser, or create extra leader accounts from the events screen later. Or run install.php for initial setup.</p>
     </div>
     </body>
     </html>
@@ -214,7 +214,6 @@ $activeEvent = get_active_event($pdo, current_user_id());
                 <thead>
                     <tr>
                         <th>Team</th>
-                        <th>Name</th>
                         <th>Time</th>
                         <th>Status</th>
                         <th class="hide-mobile">Lat</th>
@@ -242,14 +241,13 @@ $activeEvent = get_active_event($pdo, current_user_id());
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Name</th>
                         <th>Time</th>
                         <th class="hide-mobile">Lat</th>
                         <th class="hide-mobile">Lng</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td colspan="5" class="muted">No team selected.</td></tr>
+                    <tr><td colspan="4" class="muted">No team selected.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -313,7 +311,7 @@ function closeHistory() {
     historyPanel.classList.remove('show');
     historyTitle.textContent = 'Team route';
     historyMeta.textContent = 'Select a team to load its recent points.';
-    historyBody.innerHTML = '<tr><td colspan="5" class="muted">No team selected.</td></tr>';
+    historyBody.innerHTML = '<tr><td colspan="4" class="muted">No team selected.</td></tr>';
     fitToLatestMarkers();
 }
 
@@ -325,7 +323,7 @@ async function showHistory(teamName) {
     historyPanel.classList.add('show');
     historyTitle.textContent = `${teamName} route`;
     historyMeta.textContent = 'Loading…';
-    historyBody.innerHTML = '<tr><td colspan="5" class="muted">Loading history…</td></tr>';
+    historyBody.innerHTML = '<tr><td colspan="4" class="muted">Loading history…</td></tr>';
 
     clearHistoryOverlays();
 
@@ -335,7 +333,7 @@ async function showHistory(teamName) {
 
         if (data.error) {
             historyMeta.textContent = data.error;
-            historyBody.innerHTML = '<tr><td colspan="5" class="muted">Could not load history.</td></tr>';
+            historyBody.innerHTML = '<tr><td colspan="4" class="muted">Could not load history.</td></tr>';
             return;
         }
 
@@ -352,7 +350,6 @@ async function showHistory(teamName) {
             tableRows.push(`
                 <tr>
                     <td>${rows.length - index}</td>
-                    <td>${escapeHtml(row.name || 'Anonymous')}</td>
                     <td>${escapeHtml(row.time || '—')}</td>
                     <td class="hide-mobile">${hasCoords ? escapeHtml(String(row.lat)) : '—'}</td>
                     <td class="hide-mobile">${hasCoords ? escapeHtml(String(row.lng)) : '—'}</td>
@@ -363,7 +360,7 @@ async function showHistory(teamName) {
         historyMeta.textContent = `${data.event_name || 'Active event'} • ${rows.length} point${rows.length === 1 ? '' : 's'} in the last 24 hours`;
         historyBody.innerHTML = tableRows.length
             ? tableRows.join('')
-            : '<tr><td colspan="5" class="muted">No history yet for this team.</td></tr>';
+            : '<tr><td colspan="4" class="muted">No history yet for this team.</td></tr>';
 
         if (points.length > 0) {
             const orderedPoints = [...points].reverse();
@@ -389,7 +386,7 @@ async function showHistory(teamName) {
         }
     } catch (error) {
         historyMeta.textContent = 'Could not load history.';
-        historyBody.innerHTML = '<tr><td colspan="5" class="muted">Could not load history.</td></tr>';
+        historyBody.innerHTML = '<tr><td colspan="4" class="muted">Could not load history.</td></tr>';
         console.error(error);
     }
 }
@@ -433,7 +430,7 @@ async function loadData(keepCurrentView = false) {
                     weight: 3,
                     fillOpacity: 0.9
                 }).addTo(map).bindPopup(
-                    `<strong>${escapeHtml(teamName)}</strong><br>${escapeHtml(loc.name || 'No update yet')}<br>${escapeHtml(loc.time || '')}`
+                    `<strong>${escapeHtml(teamName)}</strong><br>${escapeHtml(loc.time || '')}`
                 );
                 markers.push(marker);
                 latestBounds.push([Number(loc.lat), Number(loc.lng)]);
@@ -450,7 +447,6 @@ async function loadData(keepCurrentView = false) {
             tbody.insertAdjacentHTML('beforeend', `
                 <tr>
                     <td>${teamCell}</td>
-                    <td>${escapeHtml(loc.name || '—')}</td>
                     <td>${escapeHtml(loc.time || 'No update yet')}</td>
                     <td class="${statusClass}">${escapeHtml(statusLabel)}</td>
                     <td class="hide-mobile">${hasCoords ? escapeHtml(String(loc.lat)) : '—'}</td>
@@ -461,7 +457,7 @@ async function loadData(keepCurrentView = false) {
         }
 
         if ((data.locations || []).length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7">No teams found for the active event.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6">No teams found for the active event.</td></tr>';
         }
 
         tbody.querySelectorAll('[data-team]').forEach((el) => {

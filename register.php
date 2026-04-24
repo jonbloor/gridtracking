@@ -12,25 +12,25 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf_token();
 
-    $email = trim((string)($_POST['email'] ?? ''));
+    $username = trim((string)($_POST['username'] ?? ''));
     $password = (string)($_POST['password'] ?? '');
     $fullName = trim((string)($_POST['full_name'] ?? ''));
 
-    if ($email === '' || $password === '') {
-        $error = 'Email and password are required.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Please enter a valid email address.';
+    if ($username === '' || $password === '') {
+        $error = 'Username and password are required.';
+    } elseif (!preg_match('/^[a-zA-Z0-9_-]{3,20}$/', $username)) {
+        $error = 'Username must be 3-20 characters using letters, numbers, _ or -.';
     } elseif (strlen($password) < 10) {
         $error = 'Please use a password of at least 10 characters.';
     } else {
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare('INSERT INTO users (email, password_hash, full_name, is_organiser) VALUES (?, ?, ?, 1)');
+        $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, full_name, is_organiser) VALUES (?, ?, ?, 1)');
 
         try {
-            $stmt->execute([$email, $hash, mb_substr($fullName, 0, 100)]);
-            $success = 'Account created. You can now sign in.';
+            $stmt->execute([$username, $hash, mb_substr($fullName, 0, 100)]);
+            $success = 'Account created. You can now sign in with your username.';
         } catch (PDOException $e) {
-            $error = 'That email address is already in use.';
+            $error = 'That username is already in use.';
         }
     }
 }
@@ -57,17 +57,18 @@ $csrf = post_csrf_token();
 </head>
 <body>
 <div class="container">
-    <h1>🌲 Register for Grid Tracking</h1>
+    <h1>Register for Grid Tracking</h1>
     <?php if ($error !== ''): ?><div class="notice error"><?= h($error) ?></div><?php endif; ?>
     <?php if ($success !== ''): ?><div class="notice ok"><?= h($success) ?></div><?php endif; ?>
     <form method="post" novalidate>
         <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
-        <input type="text" name="full_name" placeholder="Full name (optional)" maxlength="100">
-        <input type="email" name="email" placeholder="Email" required autocomplete="username">
-        <input type="password" name="password" placeholder="Password" required autocomplete="new-password">
+        <input type="text" name="full_name" placeholder="Full name or display name (optional)" maxlength="100">
+        <input type="text" name="username" placeholder="Username e.g. Bloory" required autocomplete="username">
+        <input type="password" name="password" placeholder="Password (min 10 chars)" required autocomplete="new-password">
         <button type="submit">Register as organiser</button>
     </form>
     <p style="text-align:center; margin-top:20px;"><a href="admin.php">Already have an account? Sign in</a></p>
+    <p style="text-align:center; margin-top:10px; font-size:0.9rem; color:#666;">Or use <a href="install.php">install.php</a> to set up the first account and database tables.</p>
 </div>
 </body>
 </html>
