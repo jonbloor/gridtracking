@@ -78,6 +78,27 @@ function validate_team_device_token(PDO $pdo, int $eventId, string $teamName, st
     return true;
 }
 
+function get_retry_seconds_for_team(PDO $pdo, int $eventId, string $team): int {
+    $stmt = $pdo->prepare(
+        'SELECT timestamp
+         FROM locations
+         WHERE event_id = ? AND team = ?
+         ORDER BY timestamp DESC
+         LIMIT 1'
+    );
+    $stmt->execute([$eventId, $team]);
+    $lastTimestamp = $stmt->fetchColumn();
+
+    if (!$lastTimestamp) {
+        return 0;
+    }
+
+    $secondsSince = time() - strtotime((string)$lastTimestamp);
+    $waitSeconds = (RATE_LIMIT_MINUTES * 60) - $secondsSince;
+
+    return max(0, (int)$waitSeconds);
+}
+
 try {
     ensure_team_device_tokens_table($pdo);
 
@@ -99,6 +120,47 @@ try {
         $stmt = $pdo->prepare('SELECT id, team_name, color FROM teams WHERE event_id = ? ORDER BY team_name');
         $stmt->execute([(int)$event['id']]);
         json_response(['teams' => $stmt->fetchAll()]);
+    }
+
+    if ($action === 'check_cooldown') {
+        $team = trim((string)($_GET['team'] ?? ''));
+
+        if ($team === '') {
+            json_response(['error' => 'No team supplied'], 422);
+        }
+
+        if (!get_platform_on($pdo)) {
+            json_response(['error' => 'Tracking is currently off'], 409);
+        }
+
+        $activeEvent = get_active_event($pdo);
+        if (!$activeEvent) {
+            json_response(['error' => 'No active event'], 409);
+        }
+
+        $eventId = (int)$activeEvent['id'];
+
+        $stmt = $pdo->prepare(
+            'SELECT id
+             FROM teams
+             WHERE event_id = ? AND team_name = ?
+             LIMIT 1'
+        );
+        $stmt->execute([$eventId, $team]);
+        $teamRow = $stmt->fetch();
+
+        if (!$teamRow) {
+            json_response(['error' => 'That team is not part of the active event'], 422);
+        }
+
+        $retrySeconds = get_retry_seconds_for_team($pdo, $eventId, $team);
+
+        json_response([
+            'success' => true,
+            'can_submit' => $retrySeconds <= 0,
+            'retry_in_seconds' => $retrySeconds,
+            'rate_limit_minutes' => RATE_LIMIT_MINUTES,
+        ]);
     }
 
     if ($action === 'admin') {
@@ -306,40 +368,27 @@ try {
             }
         }
 
-        $stmt = $pdo->prepare(
-            'SELECT timestamp
-             FROM locations
-             WHERE event_id = ? AND team = ?
-             ORDER BY timestamp DESC
-             LIMIT 1'
-        );
-        $stmt->execute([$eventId, $team]);
-        $lastTimestamp = $stmt->fetchColumn();
+        $retrySeconds = get_retry_seconds_for_team($pdo, $eventId, $team);
 
-        if ($lastTimestamp) {
-            $secondsSince = time() - strtotime((string)$lastTimestamp);
-            if ($secondsSince < RATE_LIMIT_MINUTES * 60) {
-                $waitSeconds = (RATE_LIMIT_MINUTES * 60) - $secondsSince;
-                json_response([
-                    'success' => false,
-                    'error' => 'Please wait before sending another update',
-                    'retry_in_seconds' => $waitSeconds,
-                ], 429);
-            }
+        if ($retrySeconds > 0) {
+            json_response([
+                'success' => false,
+                'error' => 'Please wait before sending another update',
+                'retry_in_seconds' => $retrySeconds,
+            ], 429);
         }
 
-    // Updated INSERT – name column was removed in recent build
-    $stmt = $pdo->prepare(
-        'INSERT INTO locations (team, lat, lng, event_id)
-         VALUES (?, ?, ?, ?)'
-    );
-    $stmt->execute([
-        $team,
-        (float)$lat,
-        (float)$lng,
-        $eventId,
-    ]);      
-      
+        $stmt = $pdo->prepare(
+            'INSERT INTO locations (team, lat, lng, event_id)
+             VALUES (?, ?, ?, ?)'
+        );
+        $stmt->execute([
+            $team,
+            (float)$lat,
+            (float)$lng,
+            $eventId,
+        ]);
+
         $response = ['success' => true];
 
         if (!$authorisedByToken && $rememberDevice) {

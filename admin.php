@@ -92,7 +92,27 @@ if (!is_admin_logged_in()) {
     exit;
 }
 
-$build = date('d/m/Y H:i');
+$buildFiles = [
+    __FILE__,
+    __DIR__ . '/index.html',
+    __DIR__ . '/api.php',
+    __DIR__ . '/success.html',
+    __DIR__ . '/sw.js',
+    __DIR__ . '/site.webmanifest',
+];
+
+$buildTimestamp = 0;
+
+foreach ($buildFiles as $file) {
+    if (is_file($file)) {
+        $buildTimestamp = max($buildTimestamp, filemtime($file));
+    }
+}
+
+$build = $buildTimestamp > 0
+    ? date('d/m/Y H:i', $buildTimestamp)
+    : 'unknown';
+
 $activeEvent = get_active_event($pdo, current_user_id());
 ?>
 <!DOCTYPE html>

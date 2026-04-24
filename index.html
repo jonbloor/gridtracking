@@ -1,29 +1,185 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Grid Tracking • Scout</title>
-    <link rel="icon" href="favicon.ico">
+
+    <title>Grid Tracking</title>
+
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+    <link rel="apple-touch-icon" href="android-chrome-192x192.png">
     <link rel="manifest" href="site.webmanifest">
+
     <meta name="theme-color" content="#2E7D32">
+
     <style>
-        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f4f4f4; color: #222; }
-        .container { max-width: 480px; margin: 0 auto; padding: 20px; }
-        .header { background: #2E7D32; color: white; padding: 16px 20px; border-radius: 16px 16px 0 0; }
-        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        select, input, button { width: 100%; padding: 14px; margin-bottom: 16px; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; box-sizing: border-box; }
-        button { background: #2E7D32; color: white; border: none; font-weight: bold; }
-        .status { padding: 12px 16px; border-radius: 10px; margin: 12px 0; font-weight: 500; }
-        .status-ok { background: #edf7ed; color: #216e39; }
-        .status-error { background: #fdeaea; color: #8a1f1f; }
-        .muted { color: #666; font-size: 0.9rem; }
-        .info-box { background: #e8f5e9; padding: 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.95rem; }
-        .event-info { background: #f0f7f0; padding: 14px; border-radius: 12px; margin-bottom: 16px; font-size: 1.05rem; font-weight: 600; }
-        .footer { text-align: center; padding: 12px 0; font-size: 0.9rem; }
-        .footer a { color: #1565C0; text-decoration: none; margin: 0 6px; }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+            color: #222;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #2E7D32;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.7rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0 0 16px 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        select,
+        input,
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .status {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin: 12px 0;
+            font-weight: 600;
+        }
+
+        .status-ok {
+            background: #edf7ed;
+            color: #216e39;
+        }
+
+        .status-error {
+            background: #fdeaea;
+            color: #8a1f1f;
+        }
+
+        .status-info {
+            background: #e8f1fb;
+            color: #174ea6;
+        }
+
+        .muted {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .info-box {
+            background: #e8f5e9;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .event-info {
+            background: #f0f7f0;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .saved-access {
+            display: none;
+            background: #eef6ff;
+            border: 1px solid #b9d6ff;
+            color: #173b73;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .cooldown-box {
+            display: none;
+            background: #fff3cd;
+            color: #684f00;
+            border: 1px solid #ffe08a;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #1565C0;
+            text-decoration: none;
+            margin: 0 6px;
+        }
+
+        .inline-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .inline-check input {
+            width: auto;
+            margin: 0;
+        }
+
+        .secondary {
+            background: #6c757d;
+        }
+
+        .blue {
+            background: #1565C0;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -32,147 +188,273 @@
         </div>
 
         <div class="card">
-            <!-- Permanent "What is this app for?" box -->
             <div class="info-box">
                 <strong>What is this app for?</strong><br>
-                This lets your team share their current location during events so authorised leaders know where each group is. You can only check in every 5 minutes
+                This lets your team share their current location during events so authorised leaders know where each group is.
+                You can only check in every 5 minutes.
             </div>
 
-            <!-- Event info -->
             <div id="eventInfo" class="event-info">Loading event...</div>
+
+            <div id="savedAccessBox" class="saved-access"></div>
+
+            <div id="cooldownBox" class="cooldown-box"></div>
 
             <div id="status" class="status" style="display:none;"></div>
 
             <form id="checkinForm">
-                <label>Your Team</label>
-                <select id="team" required></select>
+                <label for="team">Your Team</label>
+                <select id="team" required>
+                    <option value="">Loading teams...</option>
+                </select>
 
                 <div id="pinSection">
-                    <label>Team PIN (4 digits)</label>
+                    <label for="pin">Team PIN (4 digits)</label>
                     <input type="password" id="pin" inputmode="numeric" maxlength="4" placeholder="••••" required>
                 </div>
 
                 <div id="rememberSection">
-                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.95rem;">
-                        <input type="checkbox" id="remember" checked style="width:auto; margin:0;">
-                        <span>Remember this device for future check-ins</span>
+                    <label class="inline-check">
+                        <input type="checkbox" id="remember" checked>
+                        <span>Remember this team on this device for future check-ins</span>
                     </label>
+                    <p class="muted" style="margin-top:-8px;">
+                        You can forget the saved team later.
+                    </p>
                 </div>
 
                 <button type="submit" id="submitBtn">📍 Check In Now</button>
             </form>
 
-            <!-- Reminders Button -->
-            <button id="reminderBtn" onclick="enableReminders()" style="background:#1565C0; margin-top:8px;">
-                🔔 Enable 10-min reminders
+            <button id="reminderBtn" type="button" class="blue">
+                🔔 Enable 10-minute reminders while this app is open
             </button>
 
-            <!-- Safety message -->
             <div style="background:#fff3cd; padding:12px; border-radius:10px; font-size:0.95rem; margin-top:16px;">
-                <strong>⚠️ If you are lost stay still and together</strong> and check in with this app.
+                <strong>⚠️ If you are lost stay still and together.</strong>
             </div>
 
-            <!-- Privacy links -->
             <div class="footer">
-                <a href="privacy.php">Privacy notice</a> • 
+                <a href="privacy.php">Privacy notice</a> •
                 <a href="privacy-young-people.php">For young people</a>
             </div>
         </div>
     </div>
 
     <script>
+        const RATE_LIMIT_SECONDS = 5 * 60;
+
         let currentEventId = null;
-        let lastPingTime = localStorage.getItem('gridTracking_lastPingTime') ? parseInt(localStorage.getItem('gridTracking_lastPingTime')) : 0;
+        let lastPingTime = localStorage.getItem('gridTracking_lastPingTime')
+            ? parseInt(localStorage.getItem('gridTracking_lastPingTime'), 10)
+            : 0;
+
         let notificationPermissionGranted = false;
         let inactivityTimer = null;
+        let cooldownTimer = null;
+        let serverCooldownUntil = 0;
+
+        const eventInfoEl = document.getElementById('eventInfo');
+        const statusEl = document.getElementById('status');
+        const teamEl = document.getElementById('team');
+        const pinEl = document.getElementById('pin');
+        const submitBtn = document.getElementById('submitBtn');
+        const reminderBtn = document.getElementById('reminderBtn');
+        const savedAccessBox = document.getElementById('savedAccessBox');
+        const cooldownBox = document.getElementById('cooldownBox');
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(console.error);
         }
 
+        function getSavedAuth() {
+            try {
+                const saved = localStorage.getItem('gridTracking_savedAuth');
+                return saved ? JSON.parse(saved) : null;
+            } catch (e) {
+                localStorage.removeItem('gridTracking_savedAuth');
+                return null;
+            }
+        }
+
+        function clearSavedAuth() {
+            localStorage.removeItem('gridTracking_savedAuth');
+            location.reload();
+        }
+
+        function formatRetryMessage(seconds) {
+            seconds = Math.max(0, Math.ceil(Number(seconds) || 0));
+
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+
+            if (mins > 0 && secs > 0) {
+                return `Please wait ${mins} min ${secs} sec before checking in again.`;
+            }
+
+            if (mins > 0) {
+                return `Please wait ${mins} min before checking in again.`;
+            }
+
+            return `Please wait ${secs} sec before checking in again.`;
+        }
+
+        function getLocalCooldownSeconds() {
+            if (!lastPingTime) return 0;
+
+            const elapsedSeconds = Math.floor((Date.now() - lastPingTime) / 1000);
+            return Math.max(0, RATE_LIMIT_SECONDS - elapsedSeconds);
+        }
+
+        function getActiveCooldownSeconds() {
+            const localSeconds = getLocalCooldownSeconds();
+            const serverSeconds = serverCooldownUntil
+                ? Math.max(0, Math.ceil((serverCooldownUntil - Date.now()) / 1000))
+                : 0;
+
+            return Math.max(localSeconds, serverSeconds);
+        }
+
+        function updateCooldownDisplay() {
+            const seconds = getActiveCooldownSeconds();
+
+            if (seconds > 0) {
+                cooldownBox.textContent = `⏳ ${formatRetryMessage(seconds)}`;
+                cooldownBox.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.textContent = `Wait ${Math.ceil(seconds / 60)} min`;
+            } else {
+                cooldownBox.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📍 Check In Now';
+                serverCooldownUntil = 0;
+            }
+        }
+
+        function startCooldownTicker() {
+            if (cooldownTimer) clearInterval(cooldownTimer);
+
+            updateCooldownDisplay();
+
+            cooldownTimer = setInterval(updateCooldownDisplay, 1000);
+        }
+
+        async function refreshServerCooldown() {
+            const team = teamEl.value;
+            if (!team || !currentEventId) return;
+
+            try {
+                const res = await fetch(`api.php?action=check_cooldown&team=${encodeURIComponent(team)}`, {
+                    cache: 'no-store'
+                });
+
+                const data = await res.json();
+
+                if (data.retry_in_seconds && data.retry_in_seconds > 0) {
+                    serverCooldownUntil = Date.now() + (data.retry_in_seconds * 1000);
+                } else {
+                    serverCooldownUntil = 0;
+                }
+
+                startCooldownTicker();
+            } catch (e) {
+                // Do not block the user if the pre-check fails.
+            }
+        }
+
         async function loadEventAndTeams() {
             try {
-                const statusRes = await fetch('api.php?action=status');
+                const statusRes = await fetch('api.php?action=status', { cache: 'no-store' });
                 const statusData = await statusRes.json();
 
                 if (statusData.error || !statusData.active) {
-                    document.getElementById('eventInfo').innerHTML = 
-                        '<strong style="color:#c62828">No active event right now.</strong>';
+                    eventInfoEl.innerHTML = '<strong style="color:#c62828">No active event right now.</strong>';
+                    submitBtn.disabled = true;
                     return;
                 }
 
                 currentEventId = statusData.event_id;
-                document.getElementById('eventInfo').innerHTML = 
-                    `${statusData.event_name}<br><span style="font-size:0.9rem; font-weight:400; color:#216e39;">✓ Tracking is live</span>`;
 
-                const teamsRes = await fetch('api.php?action=active_teams');
+				eventInfoEl.innerHTML =
+    			`<span style="color:#216e39;">Event:</span> ${escapeHtml(statusData.event_name)}<br>
+    			 <span style="font-size:0.9rem; font-weight:400; color:#216e39;">✓ Tracking is live</span>`;
+              
+                const teamsRes = await fetch('api.php?action=active_teams', { cache: 'no-store' });
                 const data = await teamsRes.json();
                 const teams = data.teams || [];
 
-                const select = document.getElementById('team');
-                select.innerHTML = '<option value="">Select your team...</option>';
+                teamEl.innerHTML = '<option value="">Select your team...</option>';
 
                 teams.forEach(team => {
                     const opt = document.createElement('option');
                     opt.value = team.team_name;
                     opt.textContent = team.team_name;
-                    select.appendChild(opt);
+                    teamEl.appendChild(opt);
                 });
 
                 checkSavedAuth();
+                startCooldownTicker();
+                refreshServerCooldown();
 
             } catch (err) {
-                document.getElementById('eventInfo').innerHTML = 
-                    '<strong style="color:#c62828">Failed to load event.</strong>';
+                eventInfoEl.innerHTML = '<strong style="color:#c62828">Failed to load event.</strong>';
+                submitBtn.disabled = true;
             }
         }
 
         function checkSavedAuth() {
-            const saved = localStorage.getItem('gridTracking_savedAuth');
-            if (!saved || !currentEventId) return;
+            const auth = getSavedAuth();
+            if (!auth || !currentEventId) return;
 
-            try {
-                const auth = JSON.parse(saved);
-                if (auth.event_id === currentEventId) {
-                    const select = document.getElementById('team');
-                    select.value = auth.team;
-                    select.disabled = true;           
+            if (String(auth.event_id) === String(currentEventId) && auth.team) {
+                teamEl.value = auth.team;
+                teamEl.disabled = true;
 
-                    document.getElementById('pinSection').style.display = 'none';
-                    document.getElementById('rememberSection').style.display = 'none';
+                pinEl.value = '';
+                pinEl.required = false;
+                pinEl.disabled = true;
 
-                    // Forget button
-                    const forgetBtn = document.createElement('button');
-                    forgetBtn.textContent = 'Forget saved team';
-                    forgetBtn.style.background = '#6c757d';
-                    forgetBtn.style.marginTop = '8px';
-                    forgetBtn.onclick = () => {
-                        localStorage.removeItem('gridTracking_savedAuth');
-                        location.reload();
-                    };
-                    document.getElementById('checkinForm').appendChild(forgetBtn);
-                }
-            } catch (e) {}
+                document.getElementById('pinSection').style.display = 'none';
+                document.getElementById('rememberSection').style.display = 'none';
+
+                savedAccessBox.innerHTML = `
+                    <strong>Saved team:</strong> ${escapeHtml(auth.team)}<br>
+                    No PIN is needed on this device while saved access remains valid.
+                    <button type="button" id="forgetSavedTeamBtn" class="secondary" style="margin:12px 0 0;">
+                        Forget saved team
+                    </button>
+                `;
+                savedAccessBox.style.display = 'block';
+
+                document.getElementById('forgetSavedTeamBtn').addEventListener('click', clearSavedAuth);
+            }
         }
 
         function updateLastPingTime() {
             lastPingTime = Date.now();
-            localStorage.setItem('gridTracking_lastPingTime', lastPingTime);
+            localStorage.setItem('gridTracking_lastPingTime', String(lastPingTime));
+            startCooldownTicker();
         }
 
         async function submitLocation() {
-            const team = document.getElementById('team').value;
-            const pin = document.getElementById('pin').value.trim();
+            const activeCooldown = getActiveCooldownSeconds();
+            if (activeCooldown > 0) {
+                showStatus(formatRetryMessage(activeCooldown), 'error');
+                return;
+            }
+
+            const team = teamEl.value;
+            const pin = pinEl.value.trim();
             const remember = document.getElementById('remember').checked;
+            const savedAuth = getSavedAuth();
 
             if (!team) {
                 showStatus('Please select your team.', 'error');
                 return;
             }
 
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = 'Getting location...';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Getting location...';
 
             try {
                 const position = await new Promise((resolve, reject) => {
@@ -186,8 +468,19 @@
                     team: team,
                     lat: position.coords.latitude,
                     lng: position.coords.longitude,
-                    pin: pin || undefined
+                    remember_device: remember
                 };
+
+                if (
+                    savedAuth &&
+                    String(savedAuth.event_id) === String(currentEventId) &&
+                    savedAuth.team === team &&
+                    savedAuth.token
+                ) {
+                    payload.team_token = savedAuth.token;
+                } else {
+                    payload.pin = pin || undefined;
+                }
 
                 const res = await fetch('api.php?action=submit_location', {
                     method: 'POST',
@@ -209,62 +502,109 @@
                     }
 
                     showStatus('✅ Location updated!', 'ok');
+
                     setTimeout(() => {
                         window.location.href = `success.html?team=${encodeURIComponent(team)}`;
                     }, 1000);
                 } else {
-                    showStatus(result.error || 'Check-in failed.', 'error');
+                    if (result.retry_in_seconds) {
+                        serverCooldownUntil = Date.now() + (result.retry_in_seconds * 1000);
+                        startCooldownTicker();
+                        showStatus(formatRetryMessage(result.retry_in_seconds), 'error');
+                    } else {
+                        showStatus(result.error || 'Check-in failed.', 'error');
+                    }
+
+                    if (result.invalid_saved_team_token) {
+                        localStorage.removeItem('gridTracking_savedAuth');
+                        teamEl.disabled = false;
+                        pinEl.disabled = false;
+                        pinEl.required = true;
+                        document.getElementById('pinSection').style.display = 'block';
+                        document.getElementById('rememberSection').style.display = 'block';
+                        savedAccessBox.style.display = 'none';
+                    }
                 }
 
             } catch (err) {
-                showStatus('Could not get location. Check GPS.', 'error');
+                showStatus('Could not get location. Check GPS/location permission and try again.', 'error');
             } finally {
-                btn.disabled = false;
-                btn.textContent = '📍 Check In Now';
+                updateCooldownDisplay();
             }
         }
 
         function showStatus(msg, type) {
-            const el = document.getElementById('status');
-            el.textContent = msg;
-            el.className = `status status-${type}`;
-            el.style.display = 'block';
+            statusEl.textContent = msg;
+            statusEl.className = `status status-${type}`;
+            statusEl.style.display = 'block';
 
-            // Show "wait" messages longer so users can read the actual time
             const isWaitMessage = msg.toLowerCase().includes('wait');
             const hideTime = isWaitMessage ? 12000 : 6000;
 
             setTimeout(() => {
-                el.style.display = 'none';
+                statusEl.style.display = 'none';
             }, hideTime);
-        }      
-      
+        }
+
+        async function showReminderNotification() {
+            if (!('Notification' in window) || Notification.permission !== 'granted') {
+                return;
+            }
+
+            const title = '⏰ Grid Tracking Reminder';
+            const options = {
+                body: "You haven't checked in for 10 minutes. Please send a location update.",
+                icon: 'android-chrome-192x192.png',
+                badge: 'favicon-32x32.png',
+                tag: 'gridtracking-reminder',
+                requireInteraction: true
+            };
+
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.ready;
+                await registration.showNotification(title, options);
+            } else {
+                new Notification(title, options);
+            }
+        }
+
         async function enableReminders() {
-            const btn = document.getElementById('reminderBtn');
-            if (!('Notification' in window)) return alert('Notifications not supported');
+            if (!('Notification' in window)) {
+                alert('Notifications are not supported on this browser.');
+                return;
+            }
 
             const permission = await Notification.requestPermission();
+
             if (permission === 'granted') {
                 notificationPermissionGranted = true;
                 localStorage.setItem('gridTracking_notificationsEnabled', 'true');
+
+                if (!lastPingTime) {
+                    updateLastPingTime();
+                }
+
                 startInactivityTimer();
 
-                btn.textContent = '✅ Reminders enabled';
-                btn.style.background = '#216e39';
-                btn.disabled = true;
-                new Notification('✅ 10-min reminders active');
+                reminderBtn.textContent = '✅ Reminders enabled while this app is open';
+                reminderBtn.style.background = '#216e39';
+                reminderBtn.disabled = true;
+
+                await showReminderNotification();
             } else {
                 alert('Notifications were not enabled.');
             }
         }
 
         function checkReminderStatus() {
-            const btn = document.getElementById('reminderBtn');
-            if (localStorage.getItem('gridTracking_notificationsEnabled') === 'true' && 
-                'Notification' in window && Notification.permission === 'granted') {
-                btn.textContent = '✅ Reminders enabled';
-                btn.style.background = '#216e39';
-                btn.disabled = true;
+            if (
+                localStorage.getItem('gridTracking_notificationsEnabled') === 'true' &&
+                'Notification' in window &&
+                Notification.permission === 'granted'
+            ) {
+                reminderBtn.textContent = '✅ Reminders enabled while this app is open';
+                reminderBtn.style.background = '#216e39';
+                reminderBtn.disabled = true;
                 notificationPermissionGranted = true;
                 startInactivityTimer();
             }
@@ -272,31 +612,43 @@
 
         function startInactivityTimer() {
             if (inactivityTimer) clearInterval(inactivityTimer);
-            inactivityTimer = setInterval(() => {
+
+            inactivityTimer = setInterval(async () => {
+                if (!lastPingTime) return;
+
                 const minutes = (Date.now() - lastPingTime) / 1000 / 60;
+
                 if (minutes >= 10 && notificationPermissionGranted) {
-                    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
-                            type: 'SHOW_REMINDER',
-                            title: '⏰ Grid Tracking Reminder',
-                            body: 'You haven\'t checked in for 10 minutes!'
-                        });
-                    } else {
-                        new Notification('⏰ Grid Tracking Reminder', {
-                            body: 'You haven\'t checked in for 10 minutes!',
-                            icon: 'android-chrome-192x192.png'
-                        });
-                    }
+                    await showReminderNotification();
+
+                    // Prevent repeated notifications every minute.
                     lastPingTime = Date.now();
-                    localStorage.setItem('gridTracking_lastPingTime', lastPingTime);
+                    localStorage.setItem('gridTracking_lastPingTime', String(lastPingTime));
+                    startCooldownTicker();
                 }
             }, 60000);
         }
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        teamEl.addEventListener('change', () => {
+            serverCooldownUntil = 0;
+            refreshServerCooldown();
+        });
 
         document.getElementById('checkinForm').addEventListener('submit', (e) => {
             e.preventDefault();
             submitLocation();
         });
+
+        reminderBtn.addEventListener('click', enableReminders);
 
         window.onload = () => {
             loadEventAndTeams();

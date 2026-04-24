@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
     <title>Success • Grid Tracking</title>
+
     <meta name="theme-color" content="#7413dc">
+
     <link rel="manifest" href="site.webmanifest">
     <link rel="icon" href="favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+    <link rel="apple-touch-icon" href="android-chrome-192x192.png">
+
     <style>
         :root {
             --brand: #7413dc;
@@ -20,7 +24,9 @@
             --border: #cbe6d3;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -63,6 +69,16 @@
             font-weight: 800;
         }
 
+        .cooldown-note {
+            background: #fff3cd;
+            border: 1px solid #ffe08a;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 0 0 20px;
+            color: #684f00;
+            font-weight: 700;
+        }
+
         button {
             width: 100%;
             border: none;
@@ -93,6 +109,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="card">
         <h1>✅ Location Shared!</h1>
@@ -100,13 +117,25 @@
         <p class="note">
             Latest update sent for <strong id="scoutTeam">your team</strong>.<br><br>
             <strong>If you are lost, stay still</strong> and keep your phone available.<br>
-            Leaders can now see your latest location.<br><br>
+            Leaders can now see your latest location.
+        </p>
+
+        <div class="cooldown-note">
+            You can send another update in roughly <span id="cooldownCountdown">5 min</span>.
+        </div>
+
+        <p class="note">
             Returning to the start page in <span class="countdown" id="countdown">15</span> seconds…
         </p>
 
         <button id="backButton" type="button">Back to start now</button>
+
         <p class="small">You can send another update later if a leader asks you to.</p>
-        <p class="footer-links"><a href="privacy.php">Privacy notice</a> • <a href="privacy-young-people.php">Young people’s privacy page</a></p>
+
+        <p class="footer-links">
+            <a href="privacy.php">Privacy notice</a> •
+            <a href="privacy-young-people.php">Young people’s privacy page</a>
+        </p>
     </div>
 
     <script>
@@ -122,15 +151,42 @@
         let secondsRemaining = 15;
         const countdownEl = document.getElementById('countdown');
 
-        const timer = setInterval(() => {
+        const redirectTimer = setInterval(() => {
             secondsRemaining -= 1;
             countdownEl.textContent = String(secondsRemaining);
 
             if (secondsRemaining <= 0) {
-                clearInterval(timer);
+                clearInterval(redirectTimer);
                 window.location.href = 'index.html';
             }
         }, 1000);
+
+        function updateCooldownText() {
+            const lastPingTime = localStorage.getItem('gridTracking_lastPingTime')
+                ? parseInt(localStorage.getItem('gridTracking_lastPingTime'), 10)
+                : Date.now();
+
+            const elapsedSeconds = Math.floor((Date.now() - lastPingTime) / 1000);
+            const remainingSeconds = Math.max(0, (5 * 60) - elapsedSeconds);
+
+            const mins = Math.floor(remainingSeconds / 60);
+            const secs = remainingSeconds % 60;
+
+            const el = document.getElementById('cooldownCountdown');
+
+            if (remainingSeconds <= 0) {
+                el.textContent = 'now';
+            } else if (mins > 0 && secs > 0) {
+                el.textContent = `${mins} min ${secs} sec`;
+            } else if (mins > 0) {
+                el.textContent = `${mins} min`;
+            } else {
+                el.textContent = `${secs} sec`;
+            }
+        }
+
+        updateCooldownText();
+        setInterval(updateCooldownText, 1000);
     </script>
 </body>
 </html>
