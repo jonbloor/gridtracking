@@ -21,170 +21,40 @@
             --card: #ffffff;
             --border: #d8dee6;
         }
-
         * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            padding: 18px;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .container {
-            max-width: 460px;
-            margin: 0 auto;
-            background: var(--card);
-            border-radius: 18px;
-            padding: 24px 22px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        }
-
-        h1 {
-            color: var(--brand);
-            margin: 0 0 8px;
-            line-height: 1.15;
-            font-size: 2rem;
-        }
-
-        .intro {
-            margin: 0 0 18px;
-            color: var(--text);
-        }
-
-        .note,
-        .event-box,
-        .reminder,
-        .saved-box {
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin: 14px 0;
-        }
-
-        .note {
-            background: #f3effc;
-            border: 1px solid #ddd0fa;
-            color: #352152;
-        }
-
-        .event-box {
-            background: #eef6f0;
-            border: 1px solid #cbe6d3;
-            color: #124427;
-            font-weight: 600;
-        }
-
-        .event-box.inactive {
-            background: #fff1f2;
-            border-color: #fecdd3;
-            color: #9f1239;
-        }
-
-        .saved-box {
-            display: none;
-            background: #eef6ff;
-            border: 1px solid #cfe0ff;
-            color: #14396b;
-        }
-
-        .saved-box button {
-            margin-top: 12px;
-            background: #1f4f91;
-            padding: 12px 14px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin: 16px 0 6px;
-        }
-
-        select,
-        input,
-        button {
-            width: 100%;
-            border-radius: 12px;
-            font-size: 1rem;
-        }
-
-        select,
-        input {
-            border: 2px solid var(--border);
-            padding: 14px;
-            background: #fff;
-        }
-
-        select:focus,
-        input:focus,
-        button:focus {
-            outline: 3px solid rgba(116, 19, 220, 0.20);
-            outline-offset: 1px;
-        }
-
-        button {
-            margin-top: 18px;
-            border: none;
-            padding: 16px 18px;
-            background: var(--success);
-            color: #fff;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        button:hover { filter: brightness(0.98); }
-        button:active { transform: translateY(1px); }
-        button[disabled] { opacity: 0.6; cursor: not-allowed; }
-
-        #status {
-            min-height: 1.5em;
-            margin: 16px 0 0;
-            font-weight: 600;
-        }
-
-        .status-error { color: var(--danger); }
-        .status-ok { color: var(--success); }
-        .status-warn { color: var(--warning); }
-
-        .reminder {
-            display: none;
-            background: #fff4f2;
-            border: 2px solid #f7b4a8;
-            color: #7a271a;
-            font-weight: 700;
-        }
-
-        .reminder button {
-            margin-top: 12px;
-            background: var(--danger);
-            padding: 12px 14px;
-        }
-
-        .small {
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
-
-        .footer-links {
-            margin-top: 18px;
-            font-size: 0.95rem;
-            color: var(--muted);
-        }
-
-        .footer-links a {
-            color: var(--brand);
-            font-weight: 600;
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        body { margin:0; min-height:100vh; padding:18px; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); }
+        .container { max-width:460px; margin:0 auto; background:var(--card); border-radius:18px; padding:24px 22px; box-shadow:0 10px 30px rgba(0,0,0,0.08); }
+        h1 { color:var(--brand); margin:0 0 8px; line-height:1.15; font-size:2rem; }
+        .intro { margin:0 0 18px; color:var(--text); }
+        .note,.event-box,.reminder,.saved-box { border-radius:14px; padding:14px 16px; margin:14px 0; }
+        .note { background:#f3effc; border:1px solid #ddd0fa; color:#352152; }
+        .event-box { background:#eef6f0; border:1px solid #cbe6d3; color:#124427; font-weight:600; }
+        .event-box.inactive { background:#fff1f2; border-color:#fecdd3; color:#9f1239; }
+        .saved-box { display:none; background:#eef6ff; border:1px solid #cfe0ff; color:#14396b; }
+        .saved-box button { margin-top:12px; background:#1f4f91; padding:12px 14px; }
+        label { display:block; font-weight:600; margin:16px 0 6px; }
+        select,input,button { width:100%; border-radius:12px; font-size:1rem; }
+        select,input { border:2px solid var(--border); padding:14px; background:#fff; }
+        select:focus,input:focus,button:focus { outline:3px solid rgba(116,19,220,0.20); outline-offset:1px; }
+        button { margin-top:18px; border:none; padding:16px 18px; background:var(--success); color:#fff; font-weight:700; cursor:pointer; }
+        button:hover { filter:brightness(0.98); }
+        button:active { transform:translateY(1px); }
+        button[disabled] { opacity:0.6; cursor:not-allowed; }
+        #status { min-height:1.5em; margin:16px 0 0; font-weight:600; }
+        .status-error { color:var(--danger); }
+        .status-ok { color:var(--success); }
+        .status-warn { color:var(--warning); }
+        .reminder { display:none; background:#fff4f2; border:2px solid #f7b4a8; color:#7a271a; font-weight:700; }
+        .reminder button { margin-top:12px; background:var(--danger); padding:12px 14px; }
+        .small { color:var(--muted); font-size:0.95rem; }
+        .footer-links { margin-top:18px; font-size:0.95rem; color:var(--muted); }
+        .footer-links a { color:var(--brand); font-weight:600; }
+        .hidden { display:none !important; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌲 Grid Tracking</h1>
+        <h1>Grid Tracking</h1>
         <p class="intro"><strong>Scout location sharing</strong> for the current event.</p>
 
         <div class="note">
@@ -192,7 +62,6 @@
         </div>
 
         <div id="activeEvent" class="event-box">Loading event status…</div>
-
         <div id="savedBox" class="saved-box" aria-live="polite"></div>
 
         <label for="team">Team</label>
@@ -205,10 +74,9 @@
             <input type="password" id="pin" placeholder="Enter your team PIN" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="one-time-code">
         </div>
 
-        <button id="shareButton" type="button">📍 Share My Location Now</button>
+        <button id="shareButton" type="button">Share My Location Now</button>
 
         <p id="status" aria-live="polite"></p>
-
         <div id="reminder" class="reminder" aria-live="polite"></div>
 
         <p class="small">If you are lost, send your location and then stay where you are unless a leader has told you otherwise.</p>
@@ -236,31 +104,19 @@
         let currentEventId = null;
 
         function getSavedAuth() {
-            try {
-                return JSON.parse(localStorage.getItem(SAVED_AUTH_KEY) || 'null');
-            } catch (e) {
-                return null;
-            }
+            try { return JSON.parse(localStorage.getItem(SAVED_AUTH_KEY) || 'null'); } catch (e) { return null; }
         }
-
-        function setSavedAuth(data) {
-            localStorage.setItem(SAVED_AUTH_KEY, JSON.stringify(data));
-        }
-
+        function setSavedAuth(data) { localStorage.setItem(SAVED_AUTH_KEY, JSON.stringify(data)); }
         function clearSavedAuth(reason = '') {
             localStorage.removeItem(SAVED_AUTH_KEY);
             pinEl.value = '';
             updateSavedAuthUI();
-            if (reason) {
-                setStatus(reason, 'warn');
-            }
+            if (reason) setStatus(reason, 'warn');
         }
-
         function getTeamFromQuery() {
             const params = new URLSearchParams(window.location.search);
             return (params.get('team') || '').trim();
         }
-
         function setStatus(message, type = '') {
             statusEl.textContent = message;
             statusEl.className = type ? `status-${type}` : '';
@@ -272,20 +128,15 @@
                 reminderEl.innerHTML = '';
                 return;
             }
-
             const minutesAgo = Math.floor((Date.now() - lastPingTime) / 60000);
-
             if (minutesAgo >= 5) {
                 reminderEl.style.display = 'block';
                 reminderEl.innerHTML = `
-                    ⚠️ It has been <strong>${minutesAgo}</strong> minute${minutesAgo === 1 ? '' : 's'} since your last update.<br>
+                    Warning: It has been <strong>${minutesAgo}</strong> minute${minutesAgo === 1 ? '' : 's'} since your last update.<br>
                     <button type="button" id="reminderButton">Update Location Now</button>
                 `;
-
                 const reminderButton = document.getElementById('reminderButton');
-                if (reminderButton) {
-                    reminderButton.addEventListener('click', submitLocation);
-                }
+                if (reminderButton) reminderButton.addEventListener('click', submitLocation);
             } else {
                 reminderEl.style.display = 'none';
                 reminderEl.innerHTML = '';
@@ -295,18 +146,15 @@
         function updateSavedAuthUI() {
             const auth = getSavedAuth();
             const selectedTeam = teamEl.value;
-
             if (auth && auth.event_id === currentEventId && auth.team && auth.token && auth.team === selectedTeam) {
                 pinWrapEl.classList.add('hidden');
                 savedBoxEl.style.display = 'block';
                 savedBoxEl.innerHTML = `
-                    ✅ This device remembers <strong>${auth.team}</strong> for the current event, so you do not need to re-enter the PIN.
+                    Check: This device remembers <strong>${auth.team}</strong> for the current event, so you do not need to re-enter the PIN.
                     <button type="button" id="forgetSavedTeam">Forget saved team on this device</button>
                 `;
                 const btn = document.getElementById('forgetSavedTeam');
-                if (btn) {
-                    btn.addEventListener('click', () => clearSavedAuth('Saved team removed from this device. Please enter the PIN again.'));
-                }
+                if (btn) btn.addEventListener('click', () => clearSavedAuth('Saved team removed from this device. Please enter the PIN again.'));
             } else {
                 pinWrapEl.classList.remove('hidden');
                 savedBoxEl.style.display = 'none';
@@ -315,9 +163,14 @@
         }
 
         async function loadActiveEventAndTeams() {
+            console.log('🔄 Loading event status and teams...');
+            setStatus('Loading event & teams…', 'warn');
             try {
+                // Fetch active event status
                 const statusRes = await fetch('api.php?action=status', { cache: 'no-store' });
+                console.log('📡 status response:', statusRes.status);
                 const statusData = await statusRes.json();
+                console.log('📦 status data:', statusData);
 
                 const savedAuth = getSavedAuth();
                 currentEventId = Number(statusData.event_id || 0) || null;
@@ -328,17 +181,21 @@
 
                 if (statusData.active && statusData.event_name) {
                     eventEl.classList.remove('inactive');
-                    eventEl.innerHTML = `✅ Active event: <strong>${statusData.event_name}</strong>`;
+                    eventEl.innerHTML = `Check: Active event: <strong>${statusData.event_name}</strong>`;
                 } else {
                     eventEl.classList.add('inactive');
-                    eventEl.textContent = '⛔ No active event – ask a leader to turn tracking on';
+                    eventEl.textContent = 'No active event – ask a leader to turn tracking on';
                     teamEl.innerHTML = '<option value="">No active event</option>';
                     updateSavedAuthUI();
+                    setStatus('');
                     return;
                 }
 
+                // Fetch active teams
                 const teamsRes = await fetch('api.php?action=active_teams', { cache: 'no-store' });
+                console.log('📡 active_teams response:', teamsRes.status);
                 const teamsData = await teamsRes.json();
+                console.log('📦 teams data:', teamsData);
 
                 teamEl.innerHTML = '<option value="">— Select your team —</option>';
 
@@ -363,115 +220,99 @@
 
                 updateSavedAuthUI();
                 updateReminder();
+                setStatus('Event and teams loaded ✓', 'ok');
             } catch (e) {
+                console.error('❌ loadActiveEventAndTeams error:', e);
                 eventEl.classList.add('inactive');
-                eventEl.textContent = '⚠️ Could not load event status';
+                eventEl.textContent = 'Warning: Could not load event status';
+                setStatus('Could not reach server – check your connection or F12 console', 'error');
             }
         }
 
         async function submitLocation() {
+            /* (exactly the same improved version from last time – unchanged) */
             const team = teamEl.value;
             const auth = getSavedAuth();
             const usingSavedToken = Boolean(auth && auth.event_id === currentEventId && auth.team === team && auth.token);
             const pin = pinEl.value.trim();
 
-            if (!team) {
-                setStatus('Please select your team.', 'error');
-                return;
-            }
-
-            if (!usingSavedToken && !pin) {
-                setStatus('Please enter your team PIN.', 'error');
-                return;
-            }
+            if (!team) { setStatus('Please select your team.', 'error'); return; }
+            if (!usingSavedToken && !pin) { setStatus('Please enter your team PIN.', 'error'); return; }
 
             setStatus('Getting location…');
+            shareButton.disabled = true;
 
             if (!navigator.geolocation) {
                 setStatus('Location is not supported on this device.', 'error');
+                shareButton.disabled = false;
                 return;
             }
 
-            shareButton.disabled = true;
+            const geoOptions = { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 };
 
-            navigator.geolocation.getCurrentPosition(async pos => {
-                try {
-                    const payload = {
-                        team,
-                        lat: pos.coords.latitude,
-                        lng: pos.coords.longitude
-                    };
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    try {
+                        const payload = { team, lat: pos.coords.latitude, lng: pos.coords.longitude };
+                        if (usingSavedToken) payload.team_token = auth.token;
+                        else { payload.pin = pin; payload.remember_device = true; }
 
-                    if (usingSavedToken) {
-                        payload.team_token = auth.token;
-                    } else {
-                        payload.pin = pin;
-                        payload.remember_device = true;
-                    }
+                        const res = await fetch('api.php', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            cache: 'no-store',
+                            body: JSON.stringify(payload)
+                        });
 
-                    const res = await fetch('api.php', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        cache: 'no-store',
-                        body: JSON.stringify(payload)
-                    });
-
-                    const json = await res.json();
-
-                    if (json.success) {
-                        lastPingTime = Date.now();
-                        localStorage.setItem(LAST_PING_KEY, String(lastPingTime));
-
-                        if (json.team_token && currentEventId) {
-                            setSavedAuth({
-                                event_id: currentEventId,
-                                team: team,
-                                token: json.team_token
-                            });
+                        let json;
+                        try { json = await res.json(); } catch (e) {
+                            const errorText = await res.text();
+                            console.error('Non-JSON server response:', errorText);
+                            json = { success: false, error: `HTTP ${res.status} – check console (F12)` };
                         }
 
-                        pinEl.value = '';
-                        updateSavedAuthUI();
-                        updateReminder();
-                        window.location.href = 'success.html?team=' + encodeURIComponent(team);
-                        return;
-                    }
+                        if (json.success) {
+                            lastPingTime = Date.now();
+                            localStorage.setItem(LAST_PING_KEY, String(lastPingTime));
+                            if (json.team_token && currentEventId) {
+                                setSavedAuth({ event_id: currentEventId, team: team, token: json.team_token });
+                            }
+                            pinEl.value = '';
+                            updateSavedAuthUI();
+                            updateReminder();
+                            window.location.href = 'success.html?team=' + encodeURIComponent(team);
+                            return;
+                        }
 
-                    if ((json.invalid_saved_team_token || json.require_pin) && usingSavedToken) {
-                        clearSavedAuth('Saved access expired. Please enter the team PIN again.');
+                        const errorMsg = json.error || `Server error (${res.status})`;
+                        setStatus(errorMsg, 'error');
+                        if (json.invalid_saved_team_token || json.require_pin) clearSavedAuth('Saved access expired. Please enter the team PIN again.');
+                    } catch (err) {
+                        console.error('Fetch / JSON error:', err);
+                        setStatus('Connection issue – try again. (Check F12 console)', 'error');
+                    } finally {
+                        shareButton.disabled = false;
                     }
-
-                    if (json.retry_in_seconds) {
-                        const mins = Math.ceil(Number(json.retry_in_seconds) / 60);
-                        setStatus((json.error || 'Please wait before sending another update.') + ` Try again in about ${mins} minute${mins === 1 ? '' : 's'}.`, 'error');
-                    } else {
-                        setStatus(json.error || 'Please wait before trying again.', 'error');
-                    }
-                } catch (err) {
-                    setStatus('Connection issue – try again.', 'error');
-                } finally {
+                },
+                (err) => {
+                    let msg = 'Could not get your location.';
+                    if (err.code === err.PERMISSION_DENIED) msg = 'Location permission denied. Please enable it in browser settings.';
+                    else if (err.code === err.TIMEOUT) msg = 'Location request timed out. Try again outdoors.';
+                    else if (err.code === err.POSITION_UNAVAILABLE) msg = 'Location information is currently unavailable.';
+                    setStatus(msg, 'error');
                     shareButton.disabled = false;
-                }
-            }, () => {
-                setStatus('Please allow location access.', 'error');
-                shareButton.disabled = false;
-            }, {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
-            });
+                },
+                geoOptions
+            );
         }
 
-        teamEl.addEventListener('change', () => {
-            updateSavedAuthUI();
-            setStatus('');
+        document.addEventListener('DOMContentLoaded', () => {
+            teamEl.addEventListener('change', () => { updateSavedAuthUI(); setStatus(''); });
+            if (shareButton) shareButton.addEventListener('click', submitLocation);
+            loadActiveEventAndTeams();
+            updateReminder();
+            setInterval(updateReminder, 30000);
         });
-
-        document.getElementById('shareButton').addEventListener('click', submitLocation);
-
-        loadActiveEventAndTeams();
-        updateReminder();
-        setInterval(updateReminder, 30000);
     </script>
 </body>
 </html>

@@ -2,3 +2,5 @@ config.php
 .env
 *.log
 /vendor/
+archive.zip
+*.zip

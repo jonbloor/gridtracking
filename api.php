@@ -328,18 +328,18 @@ try {
             }
         }
 
-        $stmt = $pdo->prepare(
-            'INSERT INTO locations (name, team, lat, lng, event_id)
-             VALUES (?, ?, ?, ?, ?)'
-        );
-        $stmt->execute([
-            '',
-            $team,
-            (float)$lat,
-            (float)$lng,
-            $eventId,
-        ]);
-
+    // Updated INSERT – name column was removed in recent build
+    $stmt = $pdo->prepare(
+        'INSERT INTO locations (team, lat, lng, event_id)
+         VALUES (?, ?, ?, ?)'
+    );
+    $stmt->execute([
+        $team,
+        (float)$lat,
+        (float)$lng,
+        $eventId,
+    ]);      
+      
         $response = ['success' => true];
 
         if (!$authorisedByToken && $rememberDevice) {

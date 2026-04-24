@@ -102,6 +102,9 @@ $activeEvent = get_active_event($pdo, current_user_id());
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grid Tracking – Control Panel</title>
     <link rel="icon" href="favicon.ico">
+    <!-- NEW: PWA support for install prompt -->
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#2E7D32">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         :root {
@@ -488,6 +491,33 @@ async function loadData(keepCurrentView = false) {
 
 loadData();
 setInterval(() => loadData(true), 30000);
+
+// NEW: PWA install prompt for admins
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const installBtn = document.createElement('button');
+    installBtn.textContent = '📲 Install Grid Tracking on homescreen';
+    installBtn.style.cssText = 'margin: 20px auto 0; display: block; padding: 14px 24px; background: #1565C0; color: white; border: none; border-radius: 12px; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+    document.querySelector('.container').appendChild(installBtn);
+
+    installBtn.addEventListener('click', () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') console.log('✅ Admin installed Grid Tracking!');
+                deferredPrompt = null;
+                installBtn.remove();
+            });
+        }
+    });
+});
 </script>
 </body>
 </html>
